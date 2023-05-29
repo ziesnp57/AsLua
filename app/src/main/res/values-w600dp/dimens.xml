@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="fragment_horizontal_margin">8dp</dimen>
+    <dimen name="fab_margin">26dp</dimen>
+    <dimen name="activity_horizontal_margin">48dp</dimen>
+</resources>

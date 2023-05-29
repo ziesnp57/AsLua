@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-sdk tools:overrideLibrary="io.github.rosemoe.sora.lsp" />
+
+
+    <!-- 查看 WLAN 状态 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- 查看网络连接 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- 完全的网络访问权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- 修改或删除 SD 卡中的内容 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- 读取存储卡中的内容 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- 读取手机状态 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <!-- 请求安装文件包 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+
+    <queries>
+        <package android:name="com.tencent.mobileqq" />
+        <package android:name="com.tencent.tim" />
+        <package android:name="com.tencent.minihd.qq" />
+        <package android:name="com.tencent.qqlite" />
+    </queries>
+
+    <application
+            android:largeHeap="true"
+            android:name="com.aslua.LuaApplication"
+
+            android:allowBackup="true"
+            android:dataExtractionRules="@xml/data_extraction_rules"
+            android:fullBackupContent="@xml/backup_rules"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@style/Theme.代码手册"
+            android:usesCleartextTraffic="true"
+            tools:targetApi="31">
+
+        <meta-data
+                android:name="android.max_aspect"
+                android:value="4"/>
+
+        <meta-data
+                android:name="EasyGoClient"
+                android:value="true"/>
+
+
+        <activity
+                android:name="com.aslua.Main"
+                android:configChanges="orientation|screenSize|keyboardHidden"
+                android:launchMode="singleTask"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <action android:name="android.intent.action.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.als" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.als" />
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name="com.aslua.LuaActivity"
+                android:configChanges='orientation|screenSize|keyboardHidden'
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="aslua" />
+                <data android:host="com.aslua" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="file" />
+                <!--data  android:mimeType = "*/*"  /-->
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.lua" />
+            </intent-filter>
+        </activity>
+
+
+        <activity
+                android:name="com.nirenr.screencapture.ScreenCaptureActivity" />
+        <service
+                android:name="com.aslua.LuaService"
+                android:enabled="true"/>
+        <service
+                android:name="com.aslua.LuaAccessibilityService"
+                android:enabled="true"
+                android:exported="true"
+                android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <meta-data
+                    android:name="android.accessibilityservice"
+                    android:resource="@xml/accessibility_service_config" />
+
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+
+                <category android:name="android.accessibilityservice.category.FEEDBACK_AUDIBLE" />
+                <category android:name="android.accessibilityservice.category.FEEDBACK_HAPTIC" />
+                <category android:name="android.accessibilityservice.category.FEEDBACK_SPOKEN" />
+            </intent-filter>
+        </service>
+
+        <provider
+                android:name="android.content.FileProvider"
+                android:authorities="com.aslua"
+                android:exported="false"
+                android:grantUriPermissions="true">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/aslua_filepaths" />
+        </provider>
+
+
+        <activity
+                android:name=".ui.slideshow.guanyu.Guangyuzuozhe"
+                android:exported="false" />
+        <activity
+                android:name=".ui.slideshow.guanyu.Yinsizhengce"
+                android:exported="false" />
+        <activity
+                android:name=".ui.slideshow.guanyu.Yonghuxieyi"
+                android:exported="false" />
+        <activity
+                android:name=".ui.slideshow.guanyu.Fankui"
+                android:exported="false" />
+        <activity
+                android:name=".ui.slideshow.guanyu.Kaiyuanxuke"
+                android:exported="false" />
+        <activity
+                android:name=".ui.slideshow.Yunama.Yunama"
+                android:exported="false"
+                android:label="@string/yuama"
+                android:theme="@style/Theme.代码手册.NoActionBar" />
+        <activity
+                android:name=".ui.slideshow.shoucang.Shoucang"
+                android:exported="false"
+                android:label="@string/shoucang"
+                android:theme="@style/Theme.代码手册.NoActionBar" />
+        <activity
+                android:name=".ui.slideshow.liulan.Liulan"
+                android:exported="false"
+                android:label="@string/liulanjilu"
+                android:theme="@style/Theme.代码手册.NoActionBar" />
+        <activity
+                android:name=".admin.Eimu"
+                android:exported="false"
+                android:label="@string/title_activity_eimu"
+                android:theme="@style/Theme.代码手册.NoActionBar" />
+        <activity
+                android:name=".ui.slideshow.shenhe.Shenhe"
+                android:exported="false"
+                android:label="@string/rootshenhe"
+                android:theme="@style/Theme.代码手册.NoActionBar" />
+        <activity
+                android:name=".ui.slideshow.teizi.Wdteizi"
+                android:exported="false"
+                android:label="@string/teizi"
+                android:theme="@style/Theme.代码手册.NoActionBar" />
+        <activity
+                android:name=".ui.slideshow.SettingsActivity"
+                android:exported="false"
+                android:label="@string/title_activity_settings" />
+
+        <profileable
+                android:shell="true"
+                tools:targetApi="q" />
+
+        <activity
+                android:name=".ui.aeiun.MainActivity"
+                android:configChanges="orientation|keyboardHidden|screenSize|uiMode"
+                android:windowSoftInputMode="adjustResize"
+                android:exported="false"
+                android:theme="@style/Theme.代码手册1" />
+
+        <activity
+                android:name=".login.Login"
+                android:exported="false" />
+        <activity
+                android:name=".login.User"
+                android:exported="false" />
+        <activity
+                android:name=".ui.slideshow.guanyu.Guanyu"
+                android:exported="false" />
+        <activity
+                android:name=".ui.tianjia.Chuangjianxiangmu"
+                android:windowSoftInputMode="adjustResize"
+                android:exported="false" />
+        <activity
+                android:name=".ui.tianjia.Jiaochengdaima"
+                android:configChanges="orientation|keyboardHidden|screenSize"
+                android:windowSoftInputMode="adjustResize"
+                android:exported="false"
+                android:theme="@style/Theme.代码手册1" />
+        <activity
+                android:name=".MainActivity"
+                android:exported="true"
+                android:resizeableActivity="true"
+                android:theme="@style/Theme.代码手册.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- 以下是QQ登录的配置 -->
+        <activity
+                android:name="com.tencent.tauth.AuthActivity"
+                android:exported="true"
+                android:launchMode="singleTask"
+                android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tencent102049686" />
+            </intent-filter>
+        </activity>
+        <activity
+                android:name="com.tencent.connect.common.AssistActivity"
+                android:configChanges="orientation|keyboardHidden"
+                android:screenOrientation="behind"
+                android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <provider
+                android:name="androidx.core.content.FileProvider"
+                android:authorities="com.tencent.login.fileprovider"
+                android:exported="false"
+                android:grantUriPermissions="true">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>

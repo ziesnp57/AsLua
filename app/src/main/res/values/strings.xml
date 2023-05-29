@@ -1,0 +1,121 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">AsLua</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="menu_reflow">应用</string>
+    <string name="menu_transform">代码</string>
+    <string name="menu_slideshowl">共享</string>
+    <string name="menu_slideshow">我的</string>
+    <string name="menu_settings">消息</string>
+
+    <string name="title_jiaochengdaima">教程代码</string>
+    <string name="title_chuangjianxiangmu">创建应用</string>
+
+    <string name="fab_content_description">Represents a view to invoke an action</string>
+    <string name="hint">名称</string>
+
+    <string name="err_crash">应用程序已发生错误，错误日志已保存至应用私有文件夹的crash-journal.log</string>
+
+    <string name="play">运行</string>
+    <string name="undo">撤销</string>
+    <string name="redo">重做</string>
+
+    <string name="tab_texto_1">默认</string>
+    <string name="tab_texto_2">最新</string>
+    <string name="tab_texto_3">发布"</string>
+    <string name="tab_texto_4">回复</string>
+    <string name="tab_texto_5">热度</string>
+
+
+    <string name="login_mane">游客</string>
+    <string name="login_gengduo">点击登录</string>
+    <string name="teizi">我的帖子</string>
+    <string name="yuama">我的源码</string>
+    <string name="liulanjilu">浏览记录</string>
+    <string name="shoucang">我的收藏</string>
+    <string name="sheshi">软件设置</string>
+    <string name="guanyu">关于软件</string>
+
+
+    <string name="cjtext1">空白</string>
+    <string name="cjtext2">基础</string>
+    <string name="cjtext3">自定义视图</string>
+    <string name="cjtext4">侧滑栏</string>
+    <string name="cjtext5">底栏</string>
+    <string name="cjtext6">标签栏</string>
+    <string name="chuanngjian">创建</string>
+    <string name="yingyongmingcheng">应用名称</string>
+    <string name="yingyongbaoming">应用包名</string>
+
+
+    <string name="yonghuxinxi">用户信息</string>
+    <string name="yonghudenglu">用户登录</string>
+    <string name="chakanxincxi">查看信息</string>
+    <string name="tuichudenglu">退出登录</string>
+
+
+    <string name="touxang">头像</string>
+    <string name="nicheng">昵称</string>
+    <string name="id">ID</string>
+    <string name="quanxan">权限</string>
+    <string name="zhuceshijan">注册时间</string>
+    <string name="daimatiaoshi">代码调试</string>
+    <string name="title_activity_settings">软件设置</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">通用</string>
+    <string name="sync_header">编辑器</string>
+    <string name="qita_header">其他</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">语言</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="zangwu">点击右下角创建项目</string>
+    <string name="rootshenhe">审核管理</string>
+    <string name="rootyonghu">后台管理</string>
+    <string name="tab_text_1">已审核</string>
+    <string name="tab_text_2">待审核</string>
+    <string name="tab_text_3">已下架</string>
+    <string name="tab_text_4">帖子</string>
+    <string name="tab_text_5">源码</string>
+    <string name="title_activity_eimu">eimu</string>
+    <string name="copyright">CopyRight © 2023 歪果桃 版权所有</string>
+    <string name="yonghuxieyi">用户协议</string>
+    <string name="xiegan">"  |  "</string>
+    <string name="yinsizhengce">隐私政策</string>
+    <string name="kaiyuanxiangmu">开源许可</string>
+    <string name="jianchagengxin">检查更新</string>
+    <string name="guanyuzuozhe">关于作者</string>
+    <string name="fankuiwenti">反馈问题</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="jctext1">清空</string>
+    <string name="jctext2">粘贴</string>
+    <string name="jctext3">对齐</string>
+    <string name="jctext4">确定</string>
+
+
+</resources>

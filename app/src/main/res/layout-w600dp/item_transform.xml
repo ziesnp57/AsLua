@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:paddingTop="10dp">
+
+        <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="162dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:orientation="vertical">
+
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/image_view_item_transform"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            tools:src="@tools:sample/avatars"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginRight="15dp"
+                            tools:ignore="RtlHardcoded" />
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="38dp"
+                            android:orientation="vertical">
+
+                        <TextView
+                                android:id="@+id/textView5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="20dp"
+                                tools:text="This is item # xx" />
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="18dp"
+
+                                android:text="代码教程"
+                                tools:ignore="HardcodedText" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="22dp"
+                        android:text="代码教程"
+                        android:layout_marginTop="5dp"
+                        tools:ignore="HardcodedText" />
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="37dp"
+                        android:text="--需要导入LuaEditor.dex
+--dex链接为 https://mpimg.cn/down.php/1f94ddab13f7f26c428a6e31c281a309.dex
+--8.21 18:57 修了点bug，嗯，做完了。
+--8.20 00:39 可以运行手册里的代码 22:05加了评论
+--8.19 21:20 加了TabLayout和搜索 22:11又修改了一点
+--夜色未央提供api，帖子id1203
+--写爬虫 By@额可能是河北
+--感谢大佬@一只小柒夏 帮我换了cjson
+require "
+                        tools:ignore="HardcodedText" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
