@@ -144,7 +144,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
 
     @Override
     public ArrayList<ClassLoader> getClassLoaders() {
-        // TODO: Implement this method
+
         return mLuaDexLoader.getClassLoaders();
     }
 

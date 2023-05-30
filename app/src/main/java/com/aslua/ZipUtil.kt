@@ -1,19 +1,18 @@
-package com.aslua;
+package com.aslua
 
-import java.io.IOException;
+import java.io.IOException
 
-public class ZipUtil {
-	public static boolean zip(String sourceFilePath, String zipFilePath) {
-		return LuaUtil.zip(sourceFilePath, zipFilePath);
-	}
+object ZipUtil {
+    fun zip(sourceFilePath: String?, zipFilePath: String?): Boolean {
+        return LuaUtil.zip(sourceFilePath, zipFilePath)
+    }
 
-	public static boolean unzip(String zipPath, String destPath) {
-		try {
-			LuaUtil.unZip(zipPath, destPath);
-			return true;
-		}
-		catch (IOException e) {
-			return false;
-		}
-	}
+    fun unzip(zipPath: String?, destPath: String?): Boolean {
+        return try {
+            LuaUtil.unZip(zipPath, destPath)
+            true
+        } catch (e: IOException) {
+            false
+        }
+    }
 }

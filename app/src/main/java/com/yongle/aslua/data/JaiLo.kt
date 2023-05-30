@@ -3,14 +3,12 @@ package com.yongle.aslua.data
 import com.yongle.aslua.MainActivity
 import com.yongle.aslua.api.GetApi
 import com.yongle.aslua.api.HttpClient
-import com.yongle.aslua.lua.copyResourcesToAppPath
 import com.yongle.aslua.room.datacache
 
 
 // 管理初始化
 fun init() {
 
-    copyResourcesToAppPath()
     //加载网络数据
   getnn()
 

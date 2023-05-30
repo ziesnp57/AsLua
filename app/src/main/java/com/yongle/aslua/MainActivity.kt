@@ -4,9 +4,11 @@ package com.yongle.aslua
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +32,7 @@ import com.yongle.aslua.data.init
 import com.yongle.aslua.databinding.ActivityMainBinding
 import com.yongle.aslua.login.BaseUiListener
 import com.yongle.aslua.login.QQLogin
+import com.yongle.aslua.lua.copyResourcesToAppPath
 import com.yongle.aslua.room.AppDatabase
 import com.yongle.aslua.ui.tianjia.Jiaochengdaima
 import org.json.JSONObject
@@ -58,6 +61,19 @@ class MainActivity : AppCompatActivity() {
 
         // 初始化
         init()
+        // Android 11 及以上版本
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                // 跳转到设置页面
+                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                intent.data = Uri.fromParts("package", packageName, null)
+                startActivity(intent)
+            } else {
+                copyResourcesToAppPath()
+            }
+        } else {
+            copyResourcesToAppPath()
+        }
 
         // 初始化QQ登录配置
         Tencent.setIsPermissionGranted(true, Build.MODEL)
@@ -247,7 +263,7 @@ class MainActivity : AppCompatActivity() {
         lateinit var context: Context
 
         // SD 卡目录
-        val sdcardDir: String = Environment.getExternalStorageDirectory().absolutePath
+        val sdDir: String = Environment.getExternalStorageDirectory().absolutePath
 
         // 定义一个 boolean 类型的变量来跟踪 FAB 的状态
         var fabds = true
