@@ -1,15 +1,19 @@
 package com.yongle.aslua.ui.tianjia
 
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
-import android.util.Base64
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.yongle.aslua.MainActivity
 import com.yongle.aslua.R
 import com.yongle.aslua.api.GetApi
 import com.yongle.aslua.api.HttpClient
+import com.yongle.aslua.data.ResponseDatas
 import com.yongle.aslua.databinding.ActivityJiaochengdaimaBinding
 import com.yongle.aslua.room.ContentType
 import com.yongle.aslua.ui.aeiun.switchThemeIfRequired
@@ -140,15 +144,22 @@ class Jiaochengdaima : AppCompatActivity() {
         binding.jctext1.setOnClickListener {
 
             // 清空编辑器
-            binding.codeEditor.setText("")
+            binding.codeEditor.setText(null)
         }
 
         binding.jctext2.setOnClickListener {
 
-            // 粘贴代码
-            binding.codeEditor.setText("function main()\n" +
-                    "    print(\"Hello World!\")\n" +
-                    "end")
+            val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+            // 检查粘贴板是否有内容
+            if (clipboardManager.hasPrimaryClip()) {
+                val clipData = clipboardManager.primaryClip
+                if (clipData != null && clipData.itemCount > 0) {
+                    val text = clipData.getItemAt(0).text
+                    // 粘贴代码
+                    binding.codeEditor.setText(text)
+                }
+            }
         }
 
         binding.jctext3.setOnClickListener {
@@ -157,11 +168,10 @@ class Jiaochengdaima : AppCompatActivity() {
 
         }
 
+        // 获取intent传递的数据
+        val id = intent.extras!!.getString("qqLogin")
+
         binding.jctext4.setOnClickListener {
-
-            // 获取intent传递的数据
-          val id = intent.extras!!.getString("qqLogin")
-
             // 获取
             val nam = binding.textt.text.toString()
 
@@ -169,24 +179,36 @@ class Jiaochengdaima : AppCompatActivity() {
             val tab = binding.tabTds.getTabAt(binding.tabTds.selectedTabPosition)?.tag
 
             //获取前两行内容
-            val text = binding.codeEditor.text.toString().split("\n").take(4).joinToString("\n")
+            val text = binding.codeEditor.text.toString().split("\n").take(3).joinToString("\n")
 
-            // 获取编辑器内容base64解码
-            val decode = Base64.encodeToString(binding.codeEditor.text.toString().toByteArray(), Base64.DEFAULT)
+            // 获取编辑器内容
+            val decode = binding.codeEditor.text.toString()
 
-          //  val json = "user_id=$id&type_id=$tab&datalist_name=$nam&datalist_data=$text&data=$decode"
+            if ( nam == "" || text == "" || tab == null) {
+                Snackbar.make(it, "请填写完整", Snackbar.LENGTH_SHORT)
+                    .setAction("Action", null).show()
+                return@setOnClickListener
+            }
 
             // 发送 POST 请求示例
-                HttpClient().postdata(GetApi.SEARCH_HOT_DETAIL, id as String, tab as String, nam, text, decode as String,
+                HttpClient().post(GetApi.SEARCH_HOT_DETAIL, "user_id=$id&type_id=$tab&datalist_name=$nam&datalist_data=$text&data=$decode",
                     object : HttpClient.HttpCallback {
 
                     // 处理响应结果
                     override fun onSuccess(response: String) {
-                        println(response)
+                        if (MainActivity.Companion.GsonFactory.instance.fromJson(response, ResponseDatas::class.java).code == 200) {
+
+                            println("发布成功")
+                            // 跳转到主页
+                            finish()
+                        } else {
+                            Snackbar.make(it, "内容已存在", Snackbar.LENGTH_SHORT)
+                                .setAction("Action", null).show()
+                        }
                     }
 
                     override fun onFailure(message: String?) {
-
+                        Log.e("TAG", message!!)
                     }
                 })
 

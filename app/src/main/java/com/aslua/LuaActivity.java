@@ -32,7 +32,6 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,6 +56,7 @@ import com.luajava.LuaError;
 import com.luajava.LuaObject;
 import com.luajava.LuaState;
 import com.luajava.LuaStateFactory;
+import com.yongle.aslua.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -76,14 +76,12 @@ import java.util.zip.ZipInputStream;
 
 import dalvik.system.DexClassLoader;
 
-import com.yongle.aslua.R;
-
 public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiver.OnReceiveListener, LuaContext {
 
     private final static String ARG = "arg";  // 参数常量名
     private final static String DATA = "data";  // 数据常量名
     private final static String NAME = "name";  // 名称常量名
-    private static ArrayList<String> prjCache = new ArrayList<>();  // 项目缓存列表
+    private static final ArrayList<String> prjCache = new ArrayList<>();  // 项目缓存列表
     private String luaDir;  // Lua文件目录
     private Handler handler;  // 处理程序
     private TextView status;  // 状态文本视图
@@ -91,7 +89,6 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
     private LuaDexLoader mLuaDexLoader;  // Lua Dex加载器
     private int mWidth;  // 屏幕宽度
     private int mHeight;  // 屏幕高度
-    private ListView list;  // 列表视图
     private ArrayListAdapter<String> adapter;  // 列表适配器
     private LuaState L;  // Lua状态
     private String luaPath;  // Lua文件路径
@@ -144,7 +141,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
 
     @Override
     public ArrayList<ClassLoader> getClassLoaders() {
-        // TODO: Implement this method
+
         return mLuaDexLoader.getClassLoaders();
     }
 
@@ -201,7 +198,8 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
         //layout.addView(scroll, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         status.setText("");
         status.setTextIsSelectable(true);
-        list = new ListView(this);
+        // 列表视图
+        ListView list = new ListView(this);
         list.setFastScrollEnabled(true);
         adapter = new ArrayListAdapter<String>(this, android.R.layout.simple_list_item_1) {
             @Override

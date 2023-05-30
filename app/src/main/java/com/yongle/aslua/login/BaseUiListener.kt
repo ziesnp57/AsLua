@@ -34,7 +34,6 @@ open class BaseUiListener(private val mTencent: Tencent) : DefaultUiListener() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(MainActivity.context, intent, null)
 
-
     }
 
     private fun doComplete(values: JSONObject?) {

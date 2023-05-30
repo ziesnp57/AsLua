@@ -28,9 +28,9 @@ class Main : LuaActivity() {
     override fun getLuaDir(): String {
         // 返回本地目录，用于 Lua 脚本的存储
         return localDir
-    }
+}
 
-    override fun getLuaPath(): String {
+override fun getLuaPath(): String {
         // 调用 initMain 方法，用于初始化 main.lua 的内容
         initMain()
         // 返回 Lua 脚本的路径

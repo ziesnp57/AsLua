@@ -40,9 +40,6 @@ class Guanyu : AppCompatActivity() {
         window.navigationBarColor = Color.TRANSPARENT
 
 
-
-
-
         // 设置 用户协议 点击事件
         binding.yonghuxieyi.setOnClickListener {
             startActivity(Intent(this, Yonghuxieyi::class.java))

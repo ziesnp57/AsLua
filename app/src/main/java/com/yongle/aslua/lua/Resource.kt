@@ -1,33 +1,36 @@
 package com.yongle.aslua.lua
 
-import android.content.res.AssetManager
-import android.widget.Toast
-import com.yongle.aslua.MainActivity.Companion.context
+import com.yongle.aslua.MainActivity.Companion.sdDir
 import java.io.File
-import java.io.FileOutputStream
 
+/**
+ * 资源管理
+ */
 fun copyResourcesToAppPath() {
-    val assetManager: AssetManager = context.resources.assets
-    val resourcesFolder = "/"
 
-    // 获取resources文件夹下的所有资源文件的名称列表
-    val resourceFiles: Array<String> = assetManager.list(resourcesFolder) ?: return
+    // 创建文件夹
+    val dir = File(sdDir, "AsLua")
+    if (!dir.exists()) dir.mkdirs()
 
-    for (fileName in resourceFiles) {
-        val sourceFilePath = "$resourcesFolder/$fileName"
-Toast.makeText(context,sourceFilePath,Toast.LENGTH_LONG).show()
-        // 创建目标文件
-        val destinationFile = File(context.filesDir, fileName)
+    // 创建文件夹
+    val libDir = File(dir, "libs")
+    if (!libDir.exists()) libDir.mkdirs()
 
-        // 复制资源文件
-        assetManager.open(sourceFilePath).use { input ->
-            FileOutputStream(destinationFile).use { output ->
-                input.copyTo(output)
-            }
-        }
-        // 复制成功
+    // 创建文件夹
+    val luaDir = File(dir, "project")
+    if (!luaDir.exists()) luaDir.mkdirs()
+
+    // 创建lua文件
+    val luaFile = File(dir, "run.lua")
+    if (!luaFile.exists()) {
+        luaFile.createNewFile()
     }
+
+
+
+
 }
+
 
 
 

@@ -65,7 +65,7 @@
                         android:textSize="16sp"
                         android:layout_width="0dp"
                         android:gravity="center"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1" />
 
                 <TextView
@@ -75,7 +75,7 @@
                         android:textSize="16sp"
                         android:layout_width="0dp"
                         android:gravity="center"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1" />
                 <TextView
                         android:id="@+id/jctext3"
@@ -84,7 +84,7 @@
                         android:textSize="16sp"
                         android:layout_width="0dp"
                         android:gravity="center"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1" />
 
                 <TextView
@@ -94,7 +94,7 @@
                         android:textSize="16sp"
                         android:layout_width="0dp"
                         android:gravity="center"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1" />
         </LinearLayout>
 

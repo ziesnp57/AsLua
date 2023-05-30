@@ -20,6 +20,10 @@
     <!-- 读取存储卡中的内容 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <!-- 所有文件访问权限 -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+            tools:ignore="ScopedStorage" />
+
     <!-- 读取手机状态 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
@@ -47,7 +51,8 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.代码手册"
             android:usesCleartextTraffic="true"
-            tools:targetApi="31">
+            android:requestLegacyExternalStorage="true"
+            tools:targetApi="s">
 
         <meta-data
                 android:name="android.max_aspect"
@@ -65,7 +70,6 @@
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <action android:name="android.intent.action.EDIT" />
 
                 <category android:name="android.intent.category.DEFAULT" />

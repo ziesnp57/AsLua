@@ -76,37 +76,57 @@ class HttpClient {
         })
     }
 
-    // 封装 POST 请求方法，传入 url 和回调接口参数
-    fun postdata(url: String, id: String, tab: String, nam:String, text:String, decode:String, callback: HttpCallback) {
-
-        // 创建请求体对象
-        val requestBody = FormBody.Builder()
-            .add("user_id", id)
-            .add("type_id", tab)
-            .add("datalist_name", nam)
-            .add("datalist_data", text)
-            .add("data", decode)
-            .build()
-
-
+    // 封装 GET 请求方法，传入 url 和回调接口参数
+    fun get(url: String,  callback: HttpCallback) {
         val request = Request.Builder() // 创建请求构建器
             .url(url) // 设置 URL 地址
-            .post(requestBody) // 设置请求体
             .build() // 构建请求对象
 
         // 执行请求，并获取响应数据流。
         httpClient.newCall(request).enqueue(object : Callback {
 
             override fun onFailure(call: Call, e: IOException) {
+            }
+
+            override fun onResponse(call: Call, response: Response) { // 处理响应结果
+
+                if (response.code == 200) {
+                    callback.onSuccess(response.body!!.string()) // 成功回调处理方法，返回响应结果
+                }
+            }
+        })
+    }
+
+    // 封装 POST 请求方法，传入 url 和回调接口参数
+    fun post(url: String, post: String, callback: HttpCallback) {
+
+        val request = Request.Builder() // 创建请求构建器
+            .url(url) // 设置 URL 地址
+
+        // 创建请求体对象
+        val requestBody = FormBody.Builder()
+
+        for (str in post.split("&")) {
+            val (key, value) = str.split("=")
+            requestBody.add(key, value)
+        }
+
+        val reqs = requestBody.build()
+        request.post(reqs) // 设置请求体
+
+        val reqw = request.build() // 构建请求对象
+
+        // 执行请求，并获取响应数据流。
+        httpClient.newCall(reqw).enqueue(object : Callback {
+
+            override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
             }
 
             override fun onResponse(call: Call, response: Response) { // 处理响应结果
-                println(request)
                 if (response.code == 200) {
                     callback.onSuccess(response.body!!.string()) // 成功回调处理方法，返回响应结果
                 }
-
             }
         })
 

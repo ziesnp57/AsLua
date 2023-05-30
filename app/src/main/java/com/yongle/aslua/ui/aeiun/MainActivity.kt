@@ -10,8 +10,8 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.aslua.LuaActivity
-import com.aslua.LuaApplication
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.yongle.aslua.MainActivity
 import com.yongle.aslua.R
 import com.yongle.aslua.databinding.ActivityFdhfBinding
 import com.yongle.aslua.ui.aeiun.utils.CrashHandler
@@ -507,14 +507,9 @@ class MainActivity: AppCompatActivity() {
                 R.id.text_redo -> binding.codeEditor.redo()
                 R.id.text_play ->{
                     // 跳转页面
-                  //  startActivity(Intent(this, Run::class.java))
 
-                    val application: LuaApplication = application as LuaApplication
-
-                    val luaPath: String  = application.localDir + "/main.lua"
-
+                    val luaPath: String  = MainActivity.sdDir + "/AsLua/run.lua"
                     val intent = Intent(this, LuaActivity::class.java)
-                   // intent.putExtra("name", "sub")
                     intent.putExtra("luaPath", luaPath)
                     intent.putExtra("checkUpdate", true)
                     intent.putExtra("fileUri", getIntent().data)

@@ -1,62 +1,41 @@
 package com.yongle.aslua.login
 
+import android.util.Log
 import com.tencent.mmkv.MMKV
 import com.yongle.aslua.api.GetApi
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import java.io.IOException
+import com.yongle.aslua.api.HttpClient
 
 fun userlogin(uid: String, name: String, picture: String) {
 
     val kv = MMKV.defaultMMKV()
 
-//  post 请求示例
-    val requestBody = FormBody.Builder()
-        .add("uid", uid)
-        .add("user_name", name)
-        .add("user_picture", picture)
-        .build()
+    // 发送 POST 请求示例
+    HttpClient().post(GetApi.SEARCH_HOT_DETTS, "uid=$uid&user_name=$name&user_picture=$picture",
+        object : HttpClient.HttpCallback {
 
-    val request = Request.Builder()
-        .url(GetApi.SEARCH_HOT_DETTS)
-        .post(requestBody)
-        .build()
+            // 处理响应结果
+            override fun onSuccess(response: String) {
+                // 处理请求成功
+                getuser(uid)
+            }
 
-    val client = OkHttpClient()
-
-    client.newCall(request).enqueue(object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-            // 处理请求失败
-        }
-
-        override fun onResponse(call: Call, response: Response) {
-            // 处理请求成功
-            getuser(uid)
-        }
+            override fun onFailure(message: String?) {
+                Log.e("TAG", message!!)
+            }
 
         private fun getuser(uid: String) {
 
-            val clients = OkHttpClient()
+            // 发送 GET 请求示例
+            HttpClient().get(GetApi.SEARCH_HOT_DETTS + "/" + uid, object : HttpClient.HttpCallback {
 
-            val requests = Request.Builder()
-                .url(GetApi.SEARCH_HOT_DETTS + "/" + uid)
-                .build()
-
-            clients.newCall(requests).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    // 处理请求失败
-                }
-
-                override fun onResponse(call: Call, response: Response) {
+                // 处理响应结果
+                override fun onSuccess(response: String) {
                     // 处理请求成功
-                    kv.encode("user_login", response.body?.string())
+                    kv.encode("user_login", response)
                 }
+
+                override fun onFailure(message: String?) {}
             })
         }
     })
-
 }

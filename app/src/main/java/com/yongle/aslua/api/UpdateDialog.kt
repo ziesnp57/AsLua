@@ -12,6 +12,7 @@ fun updateDialog(context: android.content.Context) {
 
 
 
+
 val dialog = AlertDialog.Builder(context)
         .setTitle("检查更新")
         .setMessage("当前版本：$version\n最新版本：$version")
