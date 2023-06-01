@@ -40,7 +40,7 @@ public class LuaAssetLoader extends JavaFunction
 		}
 		catch (IOException e)
 		{
-			L.pushString("\n\tno file \'/assets/" + name + "\'");
+			L.pushString("\n\t无文件 \'/assets/" + name + "\'");
 			return 1;
 		}
 	}

@@ -5,7 +5,7 @@ import com.yongle.aslua.MainActivity.Companion.context
 
 
 
-val sp = context.getSharedPreferences("moin", Context.MODE_PRIVATE)
+val sp = context.getSharedPreferences("etag", Context.MODE_PRIVATE)!!
 
 // 获取 SharedPreferences
 fun stored(surface: String, key: String) {
@@ -19,5 +19,4 @@ fun stored(surface: String, key: String) {
 fun read(surface: String): String? {
 
     return sp.getString(surface, "")
-
 }

@@ -7,7 +7,7 @@
         <!--Appbar背景色-->
         <item name="colorPrimary">@color/purple_500</item>
         <!--ToolBar上的Title颜色-->
-        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorPrimary">@color/black</item>
 
         <!--ToolBar上的Icon颜色-->
 
@@ -32,7 +32,7 @@
         <!--Appbar背景色-->
         <item name="colorPrimary">@color/purple_500</item>
         <!--ToolBar上的Title颜色-->
-        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorPrimary">@color/black</item>
 
         <!--ToolBar上的Icon颜色-->
 

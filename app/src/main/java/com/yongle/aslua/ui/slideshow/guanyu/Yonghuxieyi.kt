@@ -9,7 +9,7 @@ import com.yongle.aslua.databinding.ActivityYonghuxieyiBinding
 class Yonghuxieyi : AppCompatActivity() {
 
     // 声明变量
-    private lateinit var binding: ActivityYonghuxieyiBinding
+    private var binding: ActivityYonghuxieyiBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,10 +24,10 @@ class Yonghuxieyi : AppCompatActivity() {
         binding = ActivityYonghuxieyiBinding.inflate(layoutInflater)
 
         // 设置布局
-        setContentView(binding.root)
+        setContentView(binding?.root)
 
         // 设置webview
-        val  webView = binding.webview
+        val  webView = binding?.webview
 
 
 val html = """
@@ -80,7 +80,7 @@ val html = """
 </body>
 </html>
     """
-       webView.loadData(html, "text/html", "UTF-8")
+        webView?.loadData(html, "text/html", "UTF-8")
 
     }
 

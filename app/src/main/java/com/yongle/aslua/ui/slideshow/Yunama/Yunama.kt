@@ -6,6 +6,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import com.yongle.aslua.R
 import com.yongle.aslua.databinding.ActivityYunamaBinding
 import com.yongle.aslua.ui.slideshow.Yunama.ui.main.SectionsPagerAdapter
 
@@ -16,14 +17,14 @@ class Yunama : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 从 ActivityMainBinding 中获取布局文件的根视图
-        binding = ActivityYunamaBinding.inflate(layoutInflater)
-
-        // 设置 Toolbar
-        setSupportActionBar(binding.toolbar)
-
         // 设置返回按钮
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // 设置标题
+        title = getString(R.string.yuama)
+
+        // 从 ActivityMainBinding 中获取布局文件的根视图
+        binding = ActivityYunamaBinding.inflate(layoutInflater)
 
         // 设置布局
         setContentView(binding.root)
@@ -39,12 +40,12 @@ class Yunama : AppCompatActivity() {
 
     }
 
+
     // 设置返回按钮的点击事件
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                @Suppress("DEPRECATION")
-                onBackPressed()
+                finish()
                 return true
             }
         }

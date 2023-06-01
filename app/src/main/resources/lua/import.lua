@@ -38,7 +38,7 @@ local function libsloader(path)
     if p then
         return assert(package.loadlib(p, "luaopen_" .. (path:gsub("%.", "_")))), p
     else
-        return "\n\tno file ./libs/lib" .. path .. ".so"
+        return "\n\t无文件 ./libs/lib" .. path .. ".so"
     end
 end
 
@@ -105,7 +105,7 @@ end
 
 local function import_require(name)
     local s, r = pcall(require, name)
-    if not s and not r:find("no file") then
+    if not s and not r:find("无文件") then
         error(r, 0)
     end
     return s and r
@@ -511,5 +511,3 @@ end
 setmetatable(luajava, luajava_mt)
 
 return env_import
-
-

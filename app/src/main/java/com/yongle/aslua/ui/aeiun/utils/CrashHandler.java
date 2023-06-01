@@ -106,7 +106,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
                 info.put("versionCode", versionCode);
             }
         } catch (NameNotFoundException e) {
-            Log.e(LOG_TAG, "an error occurred while collecting package info", e);
+            Log.e(LOG_TAG, "收集包信息时出错", e);
         }
         Field[] fields = Build.class.getDeclaredFields();
         for (Field field : fields) {
@@ -119,7 +119,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
                     info.put(field.getName(), String.valueOf(obj));
                 }
             } catch (Exception e) {
-                Log.e(LOG_TAG, "an error occurred while collecting crash info", e);
+                Log.e(LOG_TAG, "收集崩溃信息时出错", e);
             }
         }
         fields = Build.VERSION.class.getDeclaredFields();
@@ -133,7 +133,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
                     info.put(field.getName(), String.valueOf(obj));
                 }
             } catch (Exception e) {
-                Log.e(LOG_TAG, "an error occurred while collecting crash info", e);
+                Log.e(LOG_TAG, "收集崩溃信息时出错", e);
             }
         }
     }
@@ -166,7 +166,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             fos.write(sb.toString().getBytes());
             fos.close();
         } catch (Exception e) {
-            Log.e(LOG_TAG, "an error occurred while writing file...", e);
+            Log.e(LOG_TAG, "写入文件时出错...", e);
         }
     }
 }

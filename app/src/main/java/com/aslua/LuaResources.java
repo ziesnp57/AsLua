@@ -1,7 +1,6 @@
 package com.aslua;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.content.res.ColorStateList;
@@ -12,7 +11,6 @@ import android.content.res.XmlResourceParser;
 import android.graphics.Movie;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -20,7 +18,6 @@ import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import com.luajava.LuaError;
 import com.luajava.LuaMetaTable;
@@ -44,11 +41,11 @@ public class LuaResources extends Resources implements LuaMetaTable {
     private final HashMap<Integer, String[]> mTextArrayMap = new HashMap<>();
     private final HashMap<Integer, int[]> mIntArrayMap = new HashMap<>();
     private final HashMap<Integer, Typeface> mTypefaceMap = new HashMap<>();
-    private final HashMap<Integer, Integer> mIntMap = new HashMap();
+    private HashMap<Integer, Integer> mIntMap = new HashMap();
     private final HashMap<Integer, Float> mFloatMap = new HashMap<>();
-    private final HashMap<Integer, Boolean> mBooleanMap = new HashMap();
+    private HashMap<Integer, Boolean> mBooleanMap = new HashMap();
 
-    private final HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+    private final HashMap<String, Integer> mIdMap = new HashMap<>();
     private Resources mSuperResources;
 
     /**
@@ -124,7 +121,6 @@ public class LuaResources extends Resources implements LuaMetaTable {
         return mSuperResources.getDrawable(id);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public Drawable getDrawable(int id, Theme theme) throws NotFoundException {
         Drawable drawable = mDrawableMap.get(id);
@@ -201,7 +197,6 @@ public class LuaResources extends Resources implements LuaMetaTable {
         return mSuperResources.getTextArray(id);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
     public ColorStateList getColorStateList(int id, Theme theme) throws NotFoundException {
         return mSuperResources.getColorStateList(id, theme);
@@ -261,7 +256,6 @@ public class LuaResources extends Resources implements LuaMetaTable {
         return mSuperResources.getDrawableForDensity(id, density);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
     public int getColor(int id, Theme theme) throws NotFoundException {
         Integer color = mColorMap.get(id);
@@ -321,7 +315,6 @@ public class LuaResources extends Resources implements LuaMetaTable {
         return mSuperResources.getStringArray(id);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     @Override
     public Typeface getFont(int id) throws NotFoundException {
         Typeface font = mTypefaceMap.get(id);
@@ -366,7 +359,6 @@ public class LuaResources extends Resources implements LuaMetaTable {
         return mSuperResources.getQuantityText(id, quantity);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public Drawable getDrawableForDensity(int id, int density, @Nullable Theme theme) {
             return mSuperResources.getDrawableForDensity(id, density, theme);

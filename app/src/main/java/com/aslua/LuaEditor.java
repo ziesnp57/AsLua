@@ -16,8 +16,8 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import com.myopicmobile.textwarrior.android.*;
-import com.myopicmobile.textwarrior.common.*;
+import com.textwarrior.android.*;
+import com.textwarrior.common.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

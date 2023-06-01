@@ -6,8 +6,8 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/../lua
 LOCAL_CFLAGS += -std=c17
 
 CAL_ARM_MODE := arm
-TARGET_PLATFORM := arm64-v8a
-TARGET_ABI := android-30-arm64
+TARGET_PLATFORM := all
+TARGET_ABI := android-33-arm64
 
 LOCAL_MODULE     := luajava
 LOCAL_SRC_FILES  := luajava.c

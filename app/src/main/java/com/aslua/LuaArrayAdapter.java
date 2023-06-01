@@ -1,5 +1,7 @@
 package com.aslua;
 
+
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,10 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.AbsListView;
-import android.widget.ArrayListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.widget.ArrayListAdapter;
 import com.luajava.LuaError;
 import com.luajava.LuaObject;
 import com.luajava.LuaState;
@@ -64,8 +66,8 @@ public class LuaArrayAdapter extends ArrayListAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // TODO: Implement this method
-        View view = null;
-        LuaObject holder = null;
+        View view;
+        LuaObject holder;
         if (convertView == null) {
             L.newTable();
             holder = L.getLuaObject(-1);
@@ -93,6 +95,7 @@ public class LuaArrayAdapter extends ArrayListAdapter {
     }
 
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void setHelper(View view, Object value) {
         if (view instanceof TextView) {
             if (value instanceof CharSequence)
@@ -130,14 +133,15 @@ public class LuaArrayAdapter extends ArrayListAdapter {
         }
     }
 
-    private Handler mHandler = new Handler() {
+    @SuppressLint("HandlerLeak")
+    private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             notifyDataSetChanged();
         }
 
     };
-    private HashMap<String, Boolean> loaded = new HashMap<String, Boolean>();
+    private HashMap<String, Boolean> loaded = new HashMap<>();
 
     private class AsyncLoader extends Thread {
 

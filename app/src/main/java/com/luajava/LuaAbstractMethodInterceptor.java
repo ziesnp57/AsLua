@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 
 public class LuaAbstractMethodInterceptor implements MethodInterceptor {
     private final LuaContext mContext;
-    private LuaObject obj;
+    private final LuaObject obj;
 
     public LuaAbstractMethodInterceptor(LuaObject obj) {
         this.obj = obj;
@@ -46,10 +46,9 @@ public class LuaAbstractMethodInterceptor implements MethodInterceptor {
                 // Checks if returned type is void. if it is returns null.
                 if (retType.equals(Void.class) || retType.equals(void.class)) {
                     func.call(args);
-                    ret = null;
                 } else {
                     ret = func.call(args);
-                    if (ret != null && ret instanceof Double) {
+                    if (ret instanceof Double) {
                         ret = LuaState.convertLuaNumber((Double) ret, retType);
                     }
                 }

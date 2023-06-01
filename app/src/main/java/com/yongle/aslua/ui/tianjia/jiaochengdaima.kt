@@ -3,17 +3,18 @@ package com.yongle.aslua.ui.tianjia
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.gson.Gson
+import com.tencent.mmkv.MMKV
 import com.yongle.aslua.MainActivity
 import com.yongle.aslua.R
 import com.yongle.aslua.api.GetApi
 import com.yongle.aslua.api.HttpClient
-import com.yongle.aslua.data.ResponseDatas
+import com.yongle.aslua.data.Datalists
 import com.yongle.aslua.databinding.ActivityJiaochengdaimaBinding
 import com.yongle.aslua.room.ContentType
 import com.yongle.aslua.ui.aeiun.switchThemeIfRequired
@@ -29,12 +30,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Headers
 import org.eclipse.tm4e.core.registry.IThemeSource
 
 class Jiaochengdaima : AppCompatActivity() {
 
     // 声明变量
     private lateinit var binding: ActivityJiaochengdaimaBinding
+
+    // 声明 MMKV
+    private val kv = MMKV.defaultMMKV()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +70,10 @@ class Jiaochengdaima : AppCompatActivity() {
             addTabs(tds, result)
             // 设置选中状态
             tds.post {
-                tds.getTabAt(viewModel.selectedTab)?.select()
+                val tab = tds.getTabAt(viewModel.selectedTab)
+                tds.clearAnimation()
+                tds.setScrollPosition(viewModel.selectedTab, 0f, true)
+                tab?.select()
             }
         }
 
@@ -75,10 +83,6 @@ class Jiaochengdaima : AppCompatActivity() {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 // 记录选中的tab
                 viewModel.selectedTab = tab.position
-
-                // 选项卡被选中时的回调
-                println(tab.text.toString())
-                println(tab.tag)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -165,53 +169,160 @@ class Jiaochengdaima : AppCompatActivity() {
         binding.jctext3.setOnClickListener {
 
 
-
         }
 
+        val id = intent.extras?.getString("id")
+
         // 获取intent传递的数据
-        val id = intent.extras!!.getString("qqLogin")
+        val uid = intent.extras!!.getString("qqLogin").toString()
 
-        binding.jctext4.setOnClickListener {
-            // 获取
-            val nam = binding.textt.text.toString()
+        if (id != null) {
+            binding.textt.setText(intent.extras?.getString("name"))
 
-            //获取当前选中
-            val tab = binding.tabTds.getTabAt(binding.tabTds.selectedTabPosition)?.tag
+            // 设置选中状态
+            binding.tabTds.post {
+                val typeid = intent.extras?.getString("typed")!!.toInt() - 1
+                val tabTd = binding.tabTds
 
-            //获取前两行内容
-            val text = binding.codeEditor.text.toString().split("\n").take(3).joinToString("\n")
-
-            // 获取编辑器内容
-            val decode = binding.codeEditor.text.toString()
-
-            if ( nam == "" || text == "" || tab == null) {
-                Snackbar.make(it, "请填写完整", Snackbar.LENGTH_SHORT)
-                    .setAction("Action", null).show()
-                return@setOnClickListener
+                val tab = tabTd.getTabAt(typeid)
+                tabTd.clearAnimation()
+                tabTd.setScrollPosition(typeid, 0f, true)
+                tab?.select()
             }
 
-            // 发送 POST 请求示例
-                HttpClient().post(GetApi.SEARCH_HOT_DETAIL, "user_id=$id&type_id=$tab&datalist_name=$nam&datalist_data=$text&data=$decode",
-                    object : HttpClient.HttpCallback {
+            val header = mapOf(
+                "If-None-Match" to kv.decodeString("dataetag$id").toString() // 添加 ETag 请求头
+            )
+
+            HttpClient().okhttp(
+                GetApi.SEARCH_HOT_DETAIL + "?data_id=$id", null, header,
+                object : HttpClient.HttpCallback {
 
                     // 处理响应结果
-                    override fun onSuccess(response: String) {
-                        if (MainActivity.Companion.GsonFactory.instance.fromJson(response, ResponseDatas::class.java).code == 200) {
+                    override fun onSuccess(code: Int, body: String?, headers: Headers) {
 
-                            println("发布成功")
-                            // 跳转到主页
-                            finish()
-                        } else {
-                            Snackbar.make(it, "内容已存在", Snackbar.LENGTH_SHORT)
-                                .setAction("Action", null).show()
+                        if (code == 200) {
+                            val data = Gson().fromJson(body, Datalists::class.java).data
+
+                            runOnUiThread {
+                                binding.codeEditor.setText(data) // 在 UI 线程中设置编辑器的文本
+                            }
+                        }
+
+                        if (code == 304) {
+                            val data = MainActivity.Companion.Db.instance.networkDataDao()
+                                .getContentType(id)
+
+                            runOnUiThread {
+                                binding.codeEditor.setText(data) // 在 UI 线程中设置编辑器的文本
+                            }
                         }
                     }
-
-                    override fun onFailure(message: String?) {
-                        Log.e("TAG", message!!)
-                    }
                 })
+            binding.jctext4.setOnClickListener { it ->
+                // 获取
+                val nam = binding.textt.text?.trimStart().toString()
 
+                //获取当前选中
+                val tab =
+                    binding.tabTds.getTabAt(binding.tabTds.selectedTabPosition)?.tag.toString()
+
+                //获取前两行内容移除空换行
+                val text = binding.codeEditor.text.trimStart().split("\n").map { it.trim() }
+                    .filter { it.isNotEmpty() }.take(2).joinToString("\n")
+
+                // 获取编辑器内容
+                val texts = binding.codeEditor.text.trimStart().toString()
+
+                if (nam == "" || texts == "" || tab == "") {
+                    Snackbar.make(it, "请填写完整", Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show()
+                    return@setOnClickListener
+                }
+
+                // 发送 PUT 请求示例
+                HttpClient().put(GetApi.SEARCH_HOT_DETAIL + "/$id",
+                    mapOf(
+                        "type_id" to tab,
+                        "datalist_name" to nam,
+                        "datalist_data" to text,
+                        "data" to texts
+                    ),
+                    object : HttpClient.HttpCallback {
+
+                        // 处理响应结果
+                        override fun onSuccess(code: Int, body: String?, headers: Headers) {
+                            if (body == "1") {
+                                Snackbar.make(it, "修改成功", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null)
+                                    .addCallback(object : Snackbar.Callback() {
+                                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                            finish()
+                                        }
+                                    })
+                                    .show()
+                            } else {
+                                Snackbar.make(it, "内容已存在", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show()
+                            }
+                        }
+                    })
+            }
+
+        } else {
+
+            binding.jctext4.setOnClickListener { it ->
+                // 获取
+                val nam = binding.textt.text?.trimStart().toString()
+
+                //获取当前选中
+                val tab =
+                    binding.tabTds.getTabAt(binding.tabTds.selectedTabPosition)?.tag.toString()
+
+                //获取前两行内容移除空换行
+                val text = binding.codeEditor.text.trimStart().split("\n").map { it.trim() }
+                    .filter { it.isNotEmpty() }.take(2).joinToString("\n")
+
+                // 获取编辑器内容
+                val texts = binding.codeEditor.text.trimStart().toString()
+
+                if (nam == "" || text == "" || tab == "") {
+                    Snackbar.make(it, "请填写完整", Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show()
+                    return@setOnClickListener
+                }
+
+                // 发送 POST 请求示例
+                HttpClient().okhttp(GetApi.SEARCH_HOT_DETAIL,
+                    mapOf(
+                        "user_id" to uid,
+                        "type_id" to tab,
+                        "datalist_name" to nam,
+                        "datalist_data" to text,
+                        "data" to texts
+                    ),
+                    null,
+                    object : HttpClient.HttpCallback {
+
+                        // 处理响应结果
+                        override fun onSuccess(code: Int, body: String?, headers: Headers) {
+                            if (code == 200) {
+                                Snackbar.make(it, "发布成功", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null)
+                                    .addCallback(object : Snackbar.Callback() {
+                                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                            finish()
+                                        }
+                                    })
+                                    .show()
+                            } else {
+                                Snackbar.make(it, "内容已存在", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show()
+                            }
+                        }
+
+                    })
+            }
 
         }
     }

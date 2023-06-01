@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/** @noinspection ALL*/
 public class Http {
 
     private static HashMap<String, String> sHeader;
@@ -54,13 +55,13 @@ public class Http {
     }
 
     public static HttpTask get(String url, String cookie, HashMap<String, String> header, LuaObject callback) {
-        HttpTask task = cookie.matches("[\\w\\-\\.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "GET", null, cookie, header, callback) : new HttpTask(url, "GET", cookie, null, header, callback);
+        HttpTask task = cookie.matches("[\\w\\-.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "GET", null, cookie, header, callback) : new HttpTask(url, "GET", cookie, null, header, callback);
         task.execute();
         return task;
     }
 
     public static HttpTask get(String url, String cookie, LuaObject callback) {
-        HttpTask task = cookie.matches("[\\w\\-\\.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "GET", null, cookie, null, callback) : new HttpTask(url, "GET", cookie, null, null, callback);
+        HttpTask task = cookie.matches("[\\w\\-.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "GET", null, cookie, null, callback) : new HttpTask(url, "GET", cookie, null, null, callback);
         task.execute();
         return task;
     }
@@ -115,13 +116,13 @@ public class Http {
     }
 
     public static HttpTask delete(String url, String cookie, HashMap<String, String> header, LuaObject callback) {
-        HttpTask task = cookie.matches("[\\w\\-\\.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "DELETE", null, cookie, header, callback) : new HttpTask(url, "DELETE", cookie, null, header, callback);
+        HttpTask task = cookie.matches("[\\w\\-.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "DELETE", null, cookie, header, callback) : new HttpTask(url, "DELETE", cookie, null, header, callback);
         task.execute();
         return task;
     }
 
     public static HttpTask delete(String url, String cookie, LuaObject callback) {
-        HttpTask task = cookie.matches("[\\w\\-\\.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "DELETE", null, cookie, null, callback) : new HttpTask(url, "DELETE", cookie, null, null, callback);
+        HttpTask task = cookie.matches("[\\w\\-.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "DELETE", null, cookie, null, callback) : new HttpTask(url, "DELETE", cookie, null, null, callback);
         task.execute();
         return task;
     }
@@ -213,7 +214,7 @@ public class Http {
     }
 
     public static HttpTask post(String url, HashMap<String, String> data, HashMap<String, String> file, String cookie, LuaObject callback) {
-        return post(url, data, file, cookie, new HashMap<String, String>(), callback);
+        return post(url, data, file, cookie, new HashMap<>(), callback);
     }
 
     public static HttpTask post(String url, HashMap<String, String> data, HashMap<String, String> file, HashMap<String, String> header, LuaObject callback) {
@@ -275,13 +276,13 @@ public class Http {
     }
 
     public static HttpTask put(String url, String data, String cookie, LuaObject callback) {
-        HttpTask task = cookie.matches("[\\w\\-\\.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "PUT", null, cookie, null, callback) : new HttpTask(url, "PUT", cookie, null, null, callback);
+        HttpTask task = cookie.matches("[\\w\\-.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "PUT", null, cookie, null, callback) : new HttpTask(url, "PUT", cookie, null, null, callback);
         task.execute(data);
         return task;
     }
 
     public static HttpTask put(String url, String data, String cookie, HashMap<String, String> header, LuaObject callback) {
-        HttpTask task = cookie.matches("[\\w\\-\\.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "PUT", null, cookie, header, callback) : new HttpTask(url, "PUT", cookie, null, header, callback);
+        HttpTask task = cookie.matches("[\\w\\-.:]+") && Charset.isSupported(cookie) ? new HttpTask(url, "PUT", null, cookie, header, callback) : new HttpTask(url, "PUT", cookie, null, header, callback);
         task.execute(data);
         return task;
     }
@@ -369,7 +370,7 @@ public class Http {
                     mData = formatData(p1);
 
                     conn.setDoOutput(true);
-                    conn.setRequestProperty("Content-length", "" + mData.length);
+                    conn.setRequestProperty("Content-length", String.valueOf(mData.length));
                 }
 
                 conn.connect();

@@ -12,7 +12,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -24,10 +23,10 @@ import com.yongle.aslua.admin.Eimu
 import com.yongle.aslua.data.ListItem
 import com.yongle.aslua.databinding.FragmentSlideshowBinding
 import com.yongle.aslua.login.Login
-import com.yongle.aslua.login.QQInfo
 import com.yongle.aslua.login.User
 import com.yongle.aslua.login.UserLogin
 import com.yongle.aslua.ui.slideshow.Yunama.Yunama
+import com.yongle.aslua.ui.slideshow.doc.Doc
 import com.yongle.aslua.ui.slideshow.guanyu.Guanyu
 import com.yongle.aslua.ui.slideshow.liulan.Liulan
 import com.yongle.aslua.ui.slideshow.shenhe.Shenhe
@@ -40,13 +39,12 @@ class SlideshowFragment : Fragment() {
     private var _binding: FragmentSlideshowBinding? = null
     private val binding get() = _binding!!
 
-
+    val kv = MMKV.defaultMMKV()!!
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val slideshowViewModel = ViewModelProvider(this)[SlideshowViewModel::class.java]
 
         _binding = FragmentSlideshowBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -58,31 +56,21 @@ class SlideshowFragment : Fragment() {
         }
 
 
-            val kv = MMKV.defaultMMKV()
-            kv.decodeString("qq_info")?.let {
-                val gson = Gson()
-                val qqInfo = gson.fromJson(it, QQInfo::class.java)
-
-                //设置头像
-                Glide.with(requireContext()).load(qqInfo.figureurl_qq_2).into(binding.qquserimg)
-
-                //设置昵称
-                binding.textView2.text = qqInfo.nickname
-
-                binding.textView3.text = getString(R.string.chakanxincxi)
-
-            }
-
         kv.decodeString("user_login")?.let {
             val gson = Gson()
-            val userLogin = gson.fromJson(it, UserLogin::class.java).data[0].user_admin
+            val userLogin = gson.fromJson(it, UserLogin::class.java)
+            //设置头像
+            Glide.with(requireContext()).load(userLogin.user_picture).into(binding.qquserimg)
+
+            //设置昵称
+            binding.textView2.text = userLogin.user_name
+
+            binding.textView3.text = getString(R.string.chakanxincxi)
 
             //设置权限
-            if (userLogin == 1) {
+            if (userLogin.user_admin == 1) {
                 binding.rootshenhe.isVisible = true
-            }
-
-            if (userLogin == 2) {
+            } else if (userLogin.user_admin == 2) {
                 binding.rootshenhe.isVisible = true
                 binding.rootyonghu.isVisible = true
             }
@@ -91,16 +79,16 @@ class SlideshowFragment : Fragment() {
         // 设置 qquser 的点击事件
         binding.qquser.setOnClickListener {
 
-                if (!mTencent.isSessionValid) {
+            if (!mTencent.isSessionValid) {
 
-                    //跳转页面
-                    startActivity(Intent(requireContext(), Login::class.java))
+                //跳转页面
+                startActivity(Intent(requireContext(), Login::class.java))
 
-                } else {
+            } else {
 
-                    //跳转页面
-                    startActivity(Intent(requireContext(), User::class.java))
-                }
+                //跳转页面
+                startActivity(Intent(requireContext(), User::class.java))
+            }
 
         }
 
@@ -108,11 +96,19 @@ class SlideshowFragment : Fragment() {
         // 设置 我的帖子 的点击事件
         binding.teizi.setOnClickListener {
             if (mTencent.isSessionValid) {
-                //跳转页面
-                startActivity(Intent(requireContext(), Wdteizi::class.java))
+                kv.decodeString("user_login")?.let {
+
+                    // 跳转页面
+                    val intent = Intent(requireContext(), Wdteizi::class.java)
+
+                    // 传递数据
+                    intent.putExtra("uid", Gson().fromJson(it, UserLogin::class.java).uid)
+                    startActivity(intent)
+                }
             } else {
                 Snackbar.make(requireView(), "请先登录", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
+
             }
         }
 
@@ -149,6 +145,7 @@ class SlideshowFragment : Fragment() {
 
         // 合并图片资源和文本数据
         val listData = listOf(
+            ListItem(R.drawable.doc, getString(R.string.doc)),
             ListItem(R.drawable.liulanjilu, getString(R.string.liulanjilu)),
             ListItem(R.drawable.shoucang, getString(R.string.shoucang)),
             ListItem(R.drawable.shezhi, getString(R.string.sheshi)),
@@ -156,11 +153,16 @@ class SlideshowFragment : Fragment() {
         )
 
         // 自定义 Adapter，同时显示图片和文本
-        class CustomAdapter(context: Context, private val resourceId: Int, private val data: List<ListItem>) :
+        class CustomAdapter(
+            context: Context,
+            private val resourceId: Int,
+            private val data: List<ListItem>
+        ) :
             ArrayAdapter<ListItem>(context, resourceId, data) {
 
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = convertView ?: LayoutInflater.from(context).inflate(resourceId, parent, false)
+                val view =
+                    convertView ?: LayoutInflater.from(context).inflate(resourceId, parent, false)
                 val imageView = view.findViewById<ImageView>(R.id.imageView5)
                 val textView = view.findViewById<TextView>(R.id.textView2)
 
@@ -174,7 +176,8 @@ class SlideshowFragment : Fragment() {
         }
 
 // 设置 listView 的 adapter 和点击事件
-        binding.listView.adapter = CustomAdapter(requireContext(), R.layout.item_slideshow, listData)
+        binding.listView.adapter =
+            CustomAdapter(requireContext(), R.layout.item_slideshow, listData)
         binding.listView.setOnItemClickListener { _, _, position, _ ->
 
             // 点击事件
@@ -182,14 +185,38 @@ class SlideshowFragment : Fragment() {
                 0 -> {
                     // 浏览记录
                     if (mTencent.isSessionValid) {
-                        //跳转页面
-                        startActivity(Intent(requireContext(), Liulan::class.java))
+                        kv.decodeString("user_login")?.let {
+
+                            // 跳转页面
+                            val intent = Intent(requireContext(), Doc::class.java)
+
+                            // 传递数据
+                            intent.putExtra("uid", Gson().fromJson(it, UserLogin::class.java).uid)
+                            startActivity(intent)
+                        }
                     } else {
                         Snackbar.make(requireView(), "请先登录", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show()
                     }
                 }
                 1 -> {
+                    // 浏览记录
+                    if (mTencent.isSessionValid) {
+                        kv.decodeString("user_login")?.let {
+
+                            // 跳转页面
+                            val intent = Intent(requireContext(), Liulan::class.java)
+
+                            // 传递数据
+                            intent.putExtra("uid", Gson().fromJson(it, UserLogin::class.java).uid)
+                            startActivity(intent)
+                        }
+                    } else {
+                        Snackbar.make(requireView(), "请先登录", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show()
+                    }
+                }
+                2 -> {
                     // 收藏
                     // 浏览记录
                     if (mTencent.isSessionValid) {
@@ -200,25 +227,22 @@ class SlideshowFragment : Fragment() {
                             .setAction("Action", null).show()
                     }
                 }
-                2 -> {
+
+                3 -> {
                     // 设置
                     startActivity(Intent(requireContext(), SettingsActivity::class.java))
                 }
-                3 -> {
+
+                4 -> {
                     // 关于
                     startActivity(Intent(requireContext(), Guanyu::class.java))
                 }
             }
 
-
         }
-
-
 
         return root
     }
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -226,6 +250,4 @@ class SlideshowFragment : Fragment() {
         // 释放binding
         _binding = null
     }
-
-
 }

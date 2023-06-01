@@ -2,9 +2,9 @@ package com.luajava;
 
 public interface LuaMetaTable
 {
-	public Object __call(Object...arg) throws LuaError;
+	Object __call(Object...arg) throws LuaError;
 	
-	public Object __index(String key); 
+	Object __index(String key);
 	
-	public void __newIndex(String key,Object value); 
+	void __newIndex(String key,Object value);
 }

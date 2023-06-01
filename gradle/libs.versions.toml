@@ -2,9 +2,6 @@
 com-android-application = "8.2.0-alpha06"
 org-jetbrains-kotlin-android = "1.8.0"
 core-ktx = "1.9.0"
-junit = "4.13.2"
-androidx-test-ext-junit = "1.1.5"
-espresso-core = "3.5.1"
 appcompat = "1.6.1"
 material = "1.8.0"
 recyclerview = "1.3.0"
@@ -16,12 +13,11 @@ navigation-ui-ktx = "2.5.3"
 legacy-support-v4 = "1.0.0"
 preference = "1.2.0"
 annotation = "1.6.0"
+commons-io = "20030203.000550"
+tinypinyin = "2.0.3"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
@@ -39,15 +35,15 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version = "4.15.1
 bom = { group = "io.github.Rosemoe.sora-editor", name = "bom", version = "0.21.1" }
 editor = { group = "io.github.Rosemoe.sora-editor", name = "editor", version = "0.21.1" }
 language-textmate = { group = "io.github.Rosemoe.sora-editor", name = "language-textmate", version = "0.21.1" }
-editor-lsp = { group = "io.github.Rosemoe.sora-editor", name = "editor-lsp", version = "0.21.1" }
 androidx-gridlayout = { group = "androidx.gridlayout", name = "gridlayout", version = "1.0.0" }
 legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacy-support-v4" }
-mmkv = { group = "com.tencent", name = "mmkv", version = "1.2.16" }
-org-eclipse-lsp4j = { group = "org.eclipse.lsp4j", name = "org.eclipse.lsp4j", version = "0.21.0" }
+mmkv = { group = "com.tencent", name = "mmkv", version = "1.3.0" }
 preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
 annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 jsoupxpath = { group = "cn.wanghaomiao", name = "JsoupXpath", version = "2.5.3" }
 commons-compress = { group = "org.apache.commons", name = "commons-compress", version = "1.23.0" }
+commons-io = { group = "commons-io", name = "commons-io", version.ref = "commons-io" }
+tinypinyin = { group = "com.github.promeg", name = "tinypinyin", version.ref = "tinypinyin" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "com-android-application" }

@@ -1781,13 +1781,12 @@ static void test_case_block (LexState *ls, int *escapelist, expdesc *control) {
 
     leavelevel(ls);
 
-    if(!testnext(ls, TK_DO)){
-      if(!testnext(ls, TK_THEN)){
+  
         if(!testnext(ls, ':')){
           testnext(ls, '{');
         }
-      }
-    }
+
+
 
   if (ls->t.token == TK_BREAK||ls->t.token==TK_CONTINUE) {  /* 'if x then break' ? */
     int line = ls->linenumber;

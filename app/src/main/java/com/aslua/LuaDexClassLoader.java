@@ -5,7 +5,7 @@ import java.util.HashMap;
 import dalvik.system.DexClassLoader;
 
 public class LuaDexClassLoader extends DexClassLoader {
-	private HashMap<String,Class<?>> classCache=new HashMap<String,Class<?>>();
+	private HashMap<String,Class<?>> classCache= new HashMap<>();
 
 	private String mDexPath;
 

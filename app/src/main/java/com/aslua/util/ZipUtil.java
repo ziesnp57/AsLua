@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
@@ -23,13 +24,12 @@ public class ZipUtil
 {
 
 	private final static Logger logger = Logger.getLogger(ZipUtil.class.getName());
-//	private static final int BUFFER = 1024 * 10;
+
 	private static final byte[] BUFFER = new byte[4096];
 	/**
 	 * 将指定目录压缩到和该目录同名的zip文件，自定义压缩路径
 	 * @param sourceFilePath  目标文件路径
 	 * @param zipFilePath     指定zip文件路径
-	 * @return
 	 */
 	public static boolean zip(String sourceFilePath, String zipFilePath)
 	{
@@ -37,33 +37,33 @@ public class ZipUtil
 		File source=new File(sourceFilePath);
 		if (!source.exists())
 		{
-			logger.info(sourceFilePath + " doesn't exist.");
-			return result;
+			logger.info(sourceFilePath + " 不存在.");
+			return false;
 		}
 		if (!source.isDirectory())
 		{
-			logger.info(sourceFilePath + " is not a directory.");
-			return result;
+			logger.info(sourceFilePath + " 不是目录.");
+			return false;
 		}
 		File zipFile=new File(zipFilePath + "/" + source.getName() + ".zip");
 		if (zipFile.exists())
 		{
-			logger.info(zipFile.getName() + " is already exist.");
-			return result;
+			logger.info(zipFile.getName() + " 已存在.");
+			return false;
 		}
 		else
 		{
-			if (!zipFile.getParentFile().exists())
+			if (!Objects.requireNonNull(zipFile.getParentFile()).exists())
 			{
 				if (!zipFile.getParentFile().mkdirs())
 				{
-					logger.info("cann't create file " + zipFile.getName());
-					return result;
+					logger.info("无法创建文件 " + zipFile.getName());
+					return false;
 				}
 			}
 		}
-		logger.info("creating zip file...");
-		FileOutputStream dest=null;
+		logger.info("创建 zip 文件...");
+		FileOutputStream dest;
 		ZipOutputStream out =null;
 		try
 		{
@@ -102,11 +102,11 @@ public class ZipUtil
 		}
 		if (result)
 		{
-			logger.info("done.");
+			logger.info("完成.");
 		}
 		else
 		{
-			logger.info("fail.");
+			logger.info("失败.");
 		}
 		return result;
 	}
@@ -114,7 +114,7 @@ public class ZipUtil
 	{
 		if (file.isFile())
 		{
-			FileInputStream fi= null;
+			FileInputStream fi;
 			BufferedInputStream origin=null;
 			try
 			{
@@ -131,10 +131,6 @@ public class ZipUtil
 				{
 					out.write(BUFFER, 0, count);
 				}
-			}
-			catch (FileNotFoundException e)
-			{
-				e.printStackTrace();
 			}
 			catch (IOException e)
 			{
@@ -158,7 +154,7 @@ public class ZipUtil
 		else if (file.isDirectory())
 		{
 			File[] fs=file.listFiles();
-			if (fs != null && fs.length > 0)
+			if (fs != null)
 			{
 				for (File f:fs)
 				{
@@ -175,36 +171,26 @@ public class ZipUtil
 	
 	/**
 	 * 将zip文件解压到指定的目录，该zip文件必须是使用该类的zip方法压缩的文件
-	 * @param zipFile
-	 * @param destPath
-	 * @return
 	 */
 	public static boolean unzip(File zipFile, String destPath)
 	{
         boolean result=false;
         if (!zipFile.exists())
 		{
-            logger.info(zipFile.getName() + " doesn't exist.");
-            return result;
+            logger.info(zipFile.getName() + " 不存在.");
+            return false;
         }
         File target=new File(destPath);
         if (!target.exists())
 		{
             if (!target.mkdirs())
 			{
-                logger.info("cann't create file " + target.getName());
-                return result;
+                logger.info("无法创建文件 " + target.getName());
+                return false;
             }
         }
-        /*String mainFileName=zipFile.getName().replace(".zip", "");
-        File targetFile=new File(destPath + "/" + mainFileName);
-        if (targetFile.exists())
-		{
-            logger.info(targetFile.getName() + " already exist.");
-            return result;
-        }*/
-        ZipInputStream zis =null;
-        logger.info("start unzip file ...");
+		ZipInputStream zis =null;
+        logger.info("开始解压缩文件...");
         try
 		{
             FileInputStream fis= new FileInputStream(zipFile);
@@ -220,11 +206,12 @@ public class ZipUtil
                 String newEntryName=destPath + "/" + entryName;
                 System.out.println(newEntryName);
                 File temp=new File(newEntryName).getParentFile();
-                if (!temp.exists())
+				assert temp != null;
+				if (!temp.exists())
 				{
                     if (!temp.mkdirs())
 					{
-                        throw new RuntimeException("create file " + temp.getName() + " fail");
+                        throw new RuntimeException("创建文件 " + temp.getName() + " fail");
                     }
                 }
                 FileOutputStream fos = new FileOutputStream(newEntryName);
@@ -237,10 +224,6 @@ public class ZipUtil
                 dest.close();
             }
             result = true;
-        }
-		catch (FileNotFoundException e)
-		{
-            e.printStackTrace();
         }
 		catch (IOException e)
 		{
@@ -262,11 +245,11 @@ public class ZipUtil
         }
         if (result)
 		{
-            logger.info("done.");
+            logger.info("完成.");
         }
 		else
 		{
-            logger.info("fail.");
+            logger.info("失败.");
         }
         return result;
     }
@@ -294,7 +277,7 @@ public class ZipUtil
 		while (entries.hasMoreElements()) 
 		{  
 			ZipEntry e = entries.nextElement(); 
-			System.out.println("copy: " + e.getName());  
+			System.out.println("复制: " + e.getName());
 			append.putNextEntry(e);  
 			if (!e.isDirectory()) 
 			{ 
@@ -306,7 +289,7 @@ public class ZipUtil
 		ZipEntry e = new ZipEntry(appendFilePath);  
 		System.out.println("append: " + e.getName()); 
 		append.putNextEntry(e);  
-		copy(new FileInputStream(new File(appendFilePath)), append);
+		copy(new FileInputStream(appendFilePath), append);
 		append.closeEntry();  
 		// close  
 		war.close();

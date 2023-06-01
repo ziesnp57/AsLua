@@ -4,13 +4,11 @@ import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayListAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -202,7 +200,7 @@ public class SplitEditView extends LinearLayout implements View.OnClickListener,
         if (mList.length == 0)
             mList = new String[]{""};
         mListView.setNumColumns(8);
-        mListView.setAdapter(new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_1, mList));
+     //   mListView.setAdapter(new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_1, mList));
     }
 
     private void splitLine() {
@@ -213,7 +211,7 @@ public class SplitEditView extends LinearLayout implements View.OnClickListener,
         if (mList.length == 0)
             mList = new String[]{""};
         mListView.setNumColumns(1);
-        mListView.setAdapter(new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_1, mList));
+      //  mListView.setAdapter(new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_1, mList));
     }
 
     private void splitRow() {
@@ -225,7 +223,7 @@ public class SplitEditView extends LinearLayout implements View.OnClickListener,
         if (mList.length == 0)
             mList = new String[]{""};
         mListView.setNumColumns(1);
-        mListView.setAdapter(new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_1, mList));
+      //  mListView.setAdapter(new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_1, mList));
     }
 
     private void splitChunk() {
@@ -237,7 +235,7 @@ public class SplitEditView extends LinearLayout implements View.OnClickListener,
         if (mList.length == 0)
             mList = new String[]{""};
         mListView.setNumColumns(1);
-        mListView.setAdapter(new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_1, mList));
+     //   mListView.setAdapter(new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_1, mList));
     }
 
     private void updateSplit() {
@@ -298,10 +296,7 @@ public class SplitEditView extends LinearLayout implements View.OnClickListener,
             if (window != null) {
                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 if(mContext instanceof Service){
-                    if (Build.VERSION.SDK_INT >= 22)
                         window.setType(WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY);
-                    else
-                        window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR);
                 }
                 dlg.show();
             }

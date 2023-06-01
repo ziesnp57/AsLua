@@ -3,6 +3,7 @@ package com.yongle.aslua.lua
 import com.yongle.aslua.MainActivity.Companion.sdDir
 import java.io.File
 
+
 /**
  * 资源管理
  */
@@ -25,9 +26,6 @@ fun copyResourcesToAppPath() {
     if (!luaFile.exists()) {
         luaFile.createNewFile()
     }
-
-
-
 
 }
 

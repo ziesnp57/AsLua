@@ -16,11 +16,11 @@ import java.util.HashMap;
 import dalvik.system.DexClassLoader;
 
 public class LuaDexLoader {
-    private static HashMap<String, LuaDexClassLoader> dexCache = new HashMap<String, LuaDexClassLoader>();
-    private ArrayList<ClassLoader> dexList = new ArrayList<ClassLoader>();
-    private HashMap<String, String> libCache = new HashMap<String, String>();
+    private static HashMap<String, LuaDexClassLoader> dexCache = new HashMap<>();
+    private ArrayList<ClassLoader> dexList = new ArrayList<>();
+    private HashMap<String, String> libCache = new HashMap<>();
 
-    private LuaContext mContext;
+    private final LuaContext mContext;
 
     private String luaDir;
 
@@ -82,22 +82,30 @@ public class LuaDexLoader {
     }
 
     public void loadLib(String name) throws LuaError {
+        // 获取库文件名
         String fn = name;
         int i = name.indexOf(".");
         if (i > 0)
             fn = name.substring(0, i);
+        // 去掉 "lib" 前缀
         if (fn.startsWith("lib"))
             fn = fn.substring(3);
+        // 获取库文件所在目录
         String libDir = mContext.getContext().getDir(fn, Context.MODE_PRIVATE).getAbsolutePath();
+        // 获取库文件路径
         String libPath = libDir + "/lib" + fn + ".so";
+        // 检查库文件是否存在
         File f = new File(libPath);
         if (!f.exists()) {
+            // 如果库文件不存在，则从默认目录拷贝
             f = new File(luaDir + "/libs/lib" + fn + ".so");
             if (!f.exists())
-                throw new LuaError("can not find lib " + name);
+                // 如果默认目录也没有，则抛出异常
+                throw new LuaError("找不到库" + name);
+            // 拷贝库文件到指定目录
             LuaUtil.copyFile(luaDir + "/libs/lib" + fn + ".so", libPath);
-
         }
+        // 缓存库文件路径
         libCache.put(fn, libPath);
     }
 

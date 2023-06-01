@@ -7,7 +7,7 @@ import android.graphics.Bitmap;
  */
 
 public interface ScreenCaptureListener {
-     public void onScreenCaptureDone(Bitmap bitmap);
+     void onScreenCaptureDone(Bitmap bitmap);
 
-     public void onScreenCaptureError(String msg);
+     void onScreenCaptureError(String msg);
 }

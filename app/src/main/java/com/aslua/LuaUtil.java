@@ -37,6 +37,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
@@ -52,8 +53,6 @@ public class LuaUtil {
     /**
      * 截屏
      *
-     * @param activity
-     * @return
      */
     public static Bitmap captureScreen(Activity activity) {
 // 获取屏幕大小：
@@ -79,8 +78,7 @@ public class LuaUtil {
         }
         try {
 // 获取fb0数据输入流
-            InputStream stream = new FileInputStream(new File(
-                    "/dev/graphics/fb0"));
+            InputStream stream = new FileInputStream("/dev/graphics/fb0");
             DataInputStream dStream = new DataInputStream(stream);
             dStream.readFully(piex);
         } catch (Exception e) {
@@ -96,9 +94,8 @@ public class LuaUtil {
             colors[m] = (a << 24) + (r << 16) + (g << 8) + b;
         }
 // piex生成Bitmap
-        Bitmap bitmap = Bitmap.createBitmap(colors, width, height,
+        return Bitmap.createBitmap(colors, width, height,
                 Bitmap.Config.ARGB_8888);
-        return bitmap;
     }
 
     //读取asset文件
@@ -115,7 +112,7 @@ public class LuaUtil {
     public static byte[] readAll(InputStream input) throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
         byte[] buffer = new byte[4096];
-        int n = 0;
+        int n;
         while (-1 != (n = input.read(buffer))) {
             output.write(buffer, 0, n);
         }
@@ -145,19 +142,17 @@ public class LuaUtil {
         try {
             copyFile(new FileInputStream(from), new FileOutputStream(to));
         } catch (IOException e) {
-            Log.i("lua", e.getMessage());
+            Log.i("lua", Objects.requireNonNull(e.getMessage()));
         }
     }
 
     public static boolean copyFile(InputStream in, OutputStream out) {
         try {
-            int byteread = 0;
+            int byteread;
             byte[] buffer = new byte[4096];
             while ((byteread = in.read(buffer)) != -1) {
                 out.write(buffer, 0, byteread);
             }
-            //in.close();
-            //out.close();
         } catch (Exception e) {
             Log.i("lua", e.getMessage());
             return false;
@@ -172,6 +167,7 @@ public class LuaUtil {
     public static boolean copyDir(File from, File to) {
         boolean ret = true;
         File p = to.getParentFile();
+        assert p != null;
         if (!p.exists())
             p.mkdirs();
         if (from.isDirectory()) {
@@ -199,6 +195,7 @@ public class LuaUtil {
     public static boolean rmDir(File dir) {
         if (dir.isDirectory()) {
             File[] fs = dir.listFiles();
+            assert fs != null;
             for (File f : fs)
                 rmDir(f);
         }
@@ -208,6 +205,7 @@ public class LuaUtil {
     public static void rmDir(File dir, String ext) {
         if (dir.isDirectory()) {
             File[] fs = dir.listFiles();
+            assert fs != null;
             for (File f : fs)
                 rmDir(f, ext);
             dir.delete();
@@ -359,24 +357,24 @@ public class LuaUtil {
             String name = entry.getName();
             if (!name.startsWith(fileExt))
                 continue;
-            String path = name;
             if (entry.isDirectory()) {
-                File f = new File(extDir + separator + path);
+                File f = new File(extDir + separator + name);
                 if (!f.exists())
                     f.mkdirs();
             } else {
-                String fname = extDir + separator + path;
+                String fname = extDir + separator + name;
                 File temp = new File(fname).getParentFile();
+                assert temp != null;
                 if (!temp.exists()) {
                     if (!temp.mkdirs()) {
                         throw new RuntimeException("create file " + temp.getName() + " fail");
                     }
                 }
 
-                FileOutputStream out = new FileOutputStream(extDir + separator + path);
+                FileOutputStream out = new FileOutputStream(extDir + separator + name);
                 InputStream in = zip.getInputStream(entry);
                 byte[] buf = new byte[4096];
-                int count = 0;
+                int count;
                 while ((count = in.read(buf)) != -1) {
                     out.write(buf, 0, count);
                 }
@@ -403,7 +401,7 @@ public class LuaUtil {
         boolean result = false;
         File source = new File(sourceFilePath);
         File zipFile = new File(zipFilePath, zipFileName);
-        if (!zipFile.getParentFile().exists()) {
+        if (!Objects.requireNonNull(zipFile.getParentFile()).exists()) {
             if (!zipFile.getParentFile().mkdirs()) {
                 return result;
             }
@@ -416,7 +414,7 @@ public class LuaUtil {
             }
         }
 
-        FileOutputStream dest = null;
+        FileOutputStream dest;
         ZipOutputStream out = null;
         try {
             dest = new FileOutputStream(zipFile);
@@ -447,7 +445,7 @@ public class LuaUtil {
 
     private static void compress(File file, ZipOutputStream out, String mainFileName) {
         if (file.isFile()) {
-            FileInputStream fi = null;
+            FileInputStream fi;
             BufferedInputStream origin = null;
             try {
                 fi = new FileInputStream(file);
@@ -503,6 +501,7 @@ public class LuaUtil {
                 } else {
                     String fname = extDir + File.separator + name;
                     File temp = new File(fname).getParentFile();
+                    assert temp != null;
                     if (!temp.exists()) {
                         if (!temp.mkdirs()) {
                             throw new RuntimeException("create file " + fname + temp.getName() + " fail");
@@ -510,7 +509,7 @@ public class LuaUtil {
                     }
                     FileOutputStream out = new FileOutputStream(extDir + File.separator + name);
                     byte[] buf = new byte[8 * 1000];
-                    int count = 0;
+                    int count;
                     while ((count = zin.read(buf)) != -1) {
                         out.write(buf, 0, count);
                     }
@@ -531,6 +530,7 @@ public class LuaUtil {
             //CheckedOutputStream checksum = new CheckedOutputStream(dest, new Adler32());
             out = new ZipOutputStream(new BufferedOutputStream(dest));
             out.setLevel(9);
+            assert fs != null;
             for (String s : fs) {
                 compress(new File(sourceFilePath,s), out, "");
             }
@@ -558,7 +558,7 @@ public class LuaUtil {
         boolean result = false;
         //File source=new File(sourceFilePath);
         File zipFile = new File(zipFilePath, zipFileName);
-        if (!zipFile.getParentFile().exists()) {
+        if (!Objects.requireNonNull(zipFile.getParentFile()).exists()) {
             if (!zipFile.getParentFile().mkdirs()) {
                 return result;
             }
@@ -571,7 +571,7 @@ public class LuaUtil {
             }
         }
 
-        FileOutputStream dest = null;
+        FileOutputStream dest;
         ZipOutputStream out = null;
         try {
             dest = new FileOutputStream(zipFile);
@@ -604,7 +604,7 @@ public class LuaUtil {
 
 
 
-    public static final HashMap<String, String> mFileTypes = new HashMap<String, String>();
+    public static final HashMap<String, String> mFileTypes = new HashMap<>();
 
     static {
         // images
@@ -697,13 +697,13 @@ public class LuaUtil {
      */
     private static String bytesToHexString(byte[] src) {
         StringBuilder builder = new StringBuilder();
-        if (src == null || src.length <= 0) {
+        if (src == null || src.length == 0) {
             return null;
         }
         String hv;
-        for (int i = 0; i < src.length; i++) {
+        for (byte b : src) {
             // 以十六进制（基数 16）无符号整数形式返回一个整数参数的字符串表示形式，并转换为大写
-            hv = Integer.toHexString(src[i] & 0xFF).toUpperCase();
+            hv = Integer.toHexString(b & 0xFF).toUpperCase();
             if (hv.length() < 2) {
                 builder.append(0);
             }
@@ -726,8 +726,6 @@ public class LuaUtil {
             for (int x = 0; x < width; x++) {
                 int color1 = image.getPixel(x, y);
                 Color.colorToHSV(color1, hsv);
-                //int v= ((int) (hsv[2]*n))*255/n;
-                //float v2=v/10;
                 vs[x + width * y] = hsv[2];
                 v += hsv[2];
                 //imageRet.setPixel(x,y, Color.rgb(v,v,v));
@@ -735,12 +733,6 @@ public class LuaUtil {
         }
         float vv = v / (width * height) * n;
         int[][] color = new int[width][height];
-       /*for (int i=0;i<width*height;i++){
-           if(vs[i]>vv)
-               colors[i]=-1;
-           else
-               colors[i]=0xff000000;
-       }*/
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int i = x + width * y;
@@ -753,12 +745,12 @@ public class LuaUtil {
                 }
             }
         }
-        int ret = 0;
+        int ret;
         for (int x = width / 2; x < width - 10; x++) {
             for (int y = width / 3; y < width; y++) {
                 if (check(x, y, color, h, o)) {
                     ret = x;
-                    Log.i("find_color", ret + "");
+                    Log.i("find_color", String.valueOf(ret));
                     break;
                 }
             }
@@ -845,26 +837,6 @@ public class LuaUtil {
         return result;
     }
 
-    /*public static void createImage(int width, int height, int ints[][], String name) throws IOException {
-        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphic = bi.createGraphics();
-        graphic.setColor(new Color(0x003D1CFF));
-        graphic.fillRect(0, 0, width, height);
-        for (int x = 0; x < ints.length; x++) {
-            for (int y = 0; y < ints[x].length; y++) {
-                if (ints[x][y] == 1) {
-                    bi.setRGB(x, y, 0xFF7F2E);
-                }
-            }
-        }
-        Iterator<ImageWriter> it = ImageIO.getImageWritersByFormatName("png");
-        ImageWriter writer = it.next();
-        File f = new File("c://" + name + ".png");
-        ImageOutputStream ios = ImageIO.createImageOutputStream(f);
-        writer.setOutput(ios);
-        writer.write(bi);
-    }*/
-
     public static Object makeRequest(String url){
         return makeRequest(url,null,null);
     }
@@ -879,7 +851,7 @@ public class LuaUtil {
 
     public static  Object makeRequest(String url,Map<Object,Object> headers,String data){
         if (headers == null) {
-            headers = new HashMap<Object,Object>();
+            headers = new HashMap<>();
         }
        return request(url, headers, data);
     }
@@ -887,7 +859,7 @@ public class LuaUtil {
     public static Object request(String url, Map<Object,Object> headers, String data) {
         InputStream in;
         try {
-            Map<Object,Object> ret = new HashMap<Object,Object>();
+            Map<Object,Object> ret = new HashMap<>();
             URL urlUrl = new URL(url);
             HttpURLConnection conn = (HttpURLConnection) urlUrl.openConnection();
             for (Object le : headers.keySet()) {
@@ -895,6 +867,7 @@ public class LuaUtil {
                 if (value instanceof Map) {
                     addHeaders(le.toString(), (Map<Object,Object>) value, conn);
                 } else {
+                    assert value != null;
                     conn.addRequestProperty(le.toString(), value.toString());
                 }
             }
@@ -945,7 +918,7 @@ public class LuaUtil {
             while (true) {
                 int length = buff.read(buffer);
                 if (length == -1) {
-                    ret.put("content", new String(baos.toByteArray()));
+                    ret.put("content", baos.toString());
                     conn.disconnect();
                     return ret;
                 }
@@ -964,7 +937,7 @@ public class LuaUtil {
     }
 
     private static Map<Object,Object> getHeaders(HttpURLConnection conn) {
-        Map<Object,Object> headers = new HashMap<Object,Object>();
+        Map<Object,Object> headers = new HashMap<>();
         Map<String, List<String>> map = conn.getHeaderFields();
         for (Map.Entry<String, List<String>> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -972,7 +945,7 @@ public class LuaUtil {
                 key = "null";
             }
             List<String> headerValues = entry.getValue();
-            Map<Object,Object> values = new HashMap<Object,Object>();
+            Map<Object,Object> values = new HashMap<>();
             int i = 1;
             for (String value : headerValues) {
                 values.put(i, value);

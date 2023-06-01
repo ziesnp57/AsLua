@@ -24,7 +24,10 @@
 
 package com.luajava;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -80,7 +83,7 @@ public class LuaObject implements Serializable {
 			this.L = parent.getLuaState();
 
 			if (!parent.isTable() && !parent.isUserdata()) {
-				throw new LuaError("Object parent should be a table or userdata .");
+				throw new LuaError("对象父级应该是表或用户数据.");
 			}
 
 			parent.push();
@@ -106,7 +109,7 @@ public class LuaObject implements Serializable {
 		synchronized (parent.getLuaState()) {
 			this.L = parent.getLuaState();
 			if (!parent.isTable() && !parent.isUserdata())
-				throw new LuaError("Object parent should be a table or userdata .");
+				throw new LuaError("对象父级应该是表或用户数据.");
 
 			parent.push();
 			L.pushNumber(name.doubleValue());
@@ -129,10 +132,10 @@ public class LuaObject implements Serializable {
 	 */
 	protected LuaObject(LuaObject parent, LuaObject name) throws LuaError {
 		if (parent.getLuaState() != name.getLuaState())
-			throw new LuaError("LuaStates must be the same!");
+			throw new LuaError("LuaStates 必须是一样的!");
 		synchronized (parent.getLuaState()) {
 			if (!parent.isTable() && !parent.isUserdata())
-				throw new LuaError("Object parent should be a table or userdata .");
+				throw new LuaError("对象父级应该是表或用户数据.");
 
 			this.L = parent.getLuaState();
 
@@ -169,7 +172,7 @@ public class LuaObject implements Serializable {
 
 	@Override
 	protected void finalize() {
-		Log.i("luaObject", "finalize: "+ref+";"+toString());
+		Log.i("luaObject", "finalize: "+ref+";"+ this);
 		try {
 			synchronized (L) {
 				if (L.getPointer() != 0)
@@ -374,15 +377,18 @@ public class LuaObject implements Serializable {
 	@SuppressWarnings("unchecked")
 	public <T> T getObject(Class<T> type) {
 		push();
-		T obj=null;
+		T obj;
 		try {
 			obj=(T)LuaJavaAPI.compareTypes(L,type,-1);
 		}
-		catch (LuaError e) {}
+		catch (LuaError e) {
+			throw new RuntimeException(e);
+		}
 		L.pop(1);
 		return obj;
 	}
 
+	@SuppressLint("SuspiciousIndentation")
 	@SuppressWarnings("unchecked")
 	public <T> T get(Object key, Class<T> type) {
 		// TODO: Implement this method
@@ -450,12 +456,11 @@ public class LuaObject implements Serializable {
 	 * @param nres -
 	 *            Number of objects returned
 	 * @return Object[] - Returned Objects
-	 * @throws LuaError
 	 */
 	public Object[] call_aux(Object[] args, int nres) throws LuaError {
 		synchronized (L) {
 			if (!isFunction() && !isTable() && !isUserdata())
-				throw new LuaError("Invalid object. Not a function, table or userdata .");
+				throw new LuaError("无效对象 不是函数表或用户数据.");
 
 			int top = L.getTop();
 			push();
@@ -482,16 +487,16 @@ public class LuaObject implements Serializable {
 					str = "";
 
 				if (err == LuaState.LUA_ERRRUN) {
-					str = "Runtime error. " + str;
+					str = "运行时错误. " + str;
 				}
 				else if (err == LuaState.LUA_ERRMEM) {
-					str = "Memory allocation error. " + str;
+					str = "内存分配错误. " + str;
 				}
 				else if (err == LuaState.LUA_ERRERR) {
-					str = "Error while running the error handler function. " + str;
+					str = "运行错误处理程序函数时出错. " + str;
 				}
 				else {
-					str = "Lua Error code " + err + ". " + str;
+					str = "Lua错误代码" + err + ". " + str;
 				}
 
 				throw new LuaError(str);
@@ -500,7 +505,7 @@ public class LuaObject implements Serializable {
 			if (nres == LuaState.LUA_MULTRET)
 				nres = L.getTop() - top;
 			if (L.getTop() - top < nres) {
-				throw new LuaError("Invalid Number of Results .");
+				throw new LuaError("无效的结果数.");
 			}
 
 			Object[] res = new Object[nres];
@@ -519,7 +524,6 @@ public class LuaObject implements Serializable {
 	 * @param args -
 	 *            Call arguments
 	 * @return Object - Returned Object
-	 * @throws LuaError
 	 */
 	public Object call(Object... args) throws LuaError {
 		return call_aux(args, 1)[0];
@@ -528,7 +532,7 @@ public class LuaObject implements Serializable {
 	public LuaObject[] _call_aux(Object[] args, int nres) throws LuaError {
 		synchronized (L) {
 			if (!isFunction() && !isTable() && !isUserdata())
-				throw new LuaError("Invalid object. Not a function, table or userdata .");
+				throw new LuaError("无效对象 不是函数表或用户数据.");
 
 			int top = L.getTop();
 			push();
@@ -555,16 +559,16 @@ public class LuaObject implements Serializable {
 					str = "";
 
 				if (err == LuaState.LUA_ERRRUN) {
-					str = "Runtime error. " + str;
+					str = "运行时错误. " + str;
 				}
 				else if (err == LuaState.LUA_ERRMEM) {
-					str = "Memory allocation error. " + str;
+					str = "内存分配错误. " + str;
 				}
 				else if (err == LuaState.LUA_ERRERR) {
-					str = "Error while running the error handler function. " + str;
+					str = "运行错误处理程序函数时出错. " + str;
 				}
 				else {
-					str = "Lua Error code " + err + ". " + str;
+					str = "Lua错误代码" + err + ". " + str;
 				}
 
 				throw new LuaError(str);
@@ -573,7 +577,7 @@ public class LuaObject implements Serializable {
 			if (nres == LuaState.LUA_MULTRET)
 				nres = L.getTop() - top;
 			if (L.getTop() - top < nres) {
-				throw new LuaError("Invalid Number of Results .");
+				throw new LuaError("无效的结果数.");
 			}
 
 			LuaObject[] res = new LuaObject[nres];
@@ -592,7 +596,6 @@ public class LuaObject implements Serializable {
 	 * @param args -
 	 *            Call arguments
 	 * @return Object - Returned Object
-	 * @throws LuaError
 	 */
 	public LuaObject _call(Object... args) throws LuaError {
 		return _call_aux(args, 1)[0];
@@ -601,7 +604,7 @@ public class LuaObject implements Serializable {
 	public byte[] dump() throws LuaError {
 		synchronized (L) {
 			if (!isFunction())
-				throw new LuaError("Invalid object. Not a function .");
+				throw new LuaError("无效对象 不是函数.");
 
 			push();
 			byte[] buf=L.dump(-1);
@@ -623,7 +626,9 @@ public class LuaObject implements Serializable {
 				try {
 					Array.set(array, i - 1, L.toJavaObject(-1));
 				}
-				catch (LuaError e) {}
+				catch (LuaError e) {
+					throw new RuntimeException(e);
+				}
 				L.pop(1);
 			}
 			L.pop(1);
@@ -636,14 +641,16 @@ public class LuaObject implements Serializable {
 		synchronized (L) {
 			if (!isTable())
 				throw new LuaError("Invalid object. Not a table .");
-			HashMap<Object,Object> map = new HashMap<Object, Object>();
+			HashMap<Object,Object> map = new HashMap<>();
 			push();
 			L.pushNil();
 			while (L.next(idx) != 0) {
 				try {
 					map.put(L.toJavaObject(-2), L.toJavaObject(-1));
 				}
-				catch (LuaError e) {}
+				catch (LuaError e) {
+					throw new RuntimeException(e);
+				}
 				L.pop(1);
 			}
 			L.pop(1);
@@ -651,15 +658,16 @@ public class LuaObject implements Serializable {
 		}
 	}
 
+	@NonNull
 	public String toString() {
 		synchronized (L) {
 			try {
 				if (isNil())
 					return "nil";
 				else if (isBoolean())
-					return "boolean->"+String.valueOf(getBoolean());
+					return "boolean->"+ getBoolean();
 				else if (isNumber())
-					return "number->"+String.valueOf(getNumber());
+					return "number->"+ getNumber();
 				else if (isString())
 					return "string->"+getString();
 				else if (isFunction())
@@ -694,7 +702,7 @@ public class LuaObject implements Serializable {
 	public Object createProxy(String implem) throws ClassNotFoundException, LuaError {
 		synchronized (L) {
 			if (!isTable())
-				throw new LuaError("Invalid Object. Must be Table.");
+				throw new LuaError("无效对象 必须为表.");
 
 			StringTokenizer st = new StringTokenizer(implem, ",");
 			Class[] interfaces = new Class[st.countTokens()];
@@ -707,15 +715,16 @@ public class LuaObject implements Serializable {
 		}
 	}
 
+	@SuppressLint("SuspiciousIndentation")
 	public Object createProxy(Class implem) throws LuaError {
 		synchronized (L) {
 			if (!isTable() && !isFunction())
-				throw new LuaError("Invalid Object. Must be Table or Function.");
+				throw new LuaError("无效对象 必须是表或函数.");
 
 			if(isFunction() && implem.getMethods().length!=1)
-				throw new LuaError("Invalid Object. Must be a interface Method of Function.");
+				throw new LuaError("无效对象 必须是函数的接口方法.");
             if(isTable()&&getTable().isList()){
-	            throw new LuaError("Invalid Object. Must be Table is Not Array.");
+	            throw new LuaError("无效对象 必须是表不是数组.");
             }
 			Class[] interfaces = new Class[]{implem};
 

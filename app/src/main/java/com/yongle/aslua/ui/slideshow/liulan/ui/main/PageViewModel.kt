@@ -1,18 +1,18 @@
 package com.yongle.aslua.ui.slideshow.liulan.ui.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 
 class PageViewModel : ViewModel() {
 
-    private val _index = MutableLiveData<Int>()
-    val text: LiveData<String> = _index.map {
-        "Hello world from section: $it"
-    }
+    // 定义一个公有的 tabs 变量
+    var selectedTabs: Int = 0
 
-    fun setIndex(index: Int) {
-        _index.value = index
-    }
+    // 定义一个公有的 url 变量
+    var urls: String = ""
+
+    // 定义一个公有的 start 变量
+    var start: Int = 1
+
+    // 定义一个公有的 isLoading 变量
+    var isLoading: Boolean = false
 }

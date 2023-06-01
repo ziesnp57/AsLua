@@ -9,7 +9,7 @@ import com.yongle.aslua.databinding.ActivityYinsizhengceBinding
 class Yinsizhengce : AppCompatActivity() {
 
     // 声明变量
-    private lateinit var binding: ActivityYinsizhengceBinding
+    private var binding: ActivityYinsizhengceBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,10 +24,10 @@ class Yinsizhengce : AppCompatActivity() {
         binding = ActivityYinsizhengceBinding.inflate(layoutInflater)
 
         // 设置布局
-        setContentView(binding.root)
+        setContentView(binding?.root)
 
         // 设置webview
-        val  webView = binding.webview
+        val  webView = binding?.webview
 
         val html = """
 <html>
@@ -83,7 +83,7 @@ class Yinsizhengce : AppCompatActivity() {
 </body>
 </html>
     """
-        webView.loadData(html, "text/html", "UTF-8")
+        webView?.loadData(html, "text/html", "UTF-8")
 
     }
 

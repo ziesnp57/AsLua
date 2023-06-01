@@ -21,8 +21,7 @@ local LuaDrawable=luajava.bindClass "com.aslua.LuaDrawable"
 local LuaBitmapDrawable=luajava.bindClass "com.aslua.LuaBitmapDrawable"
 local LuaBitmap=luajava.bindClass "com.aslua.LuaBitmap"
 local LuaAdapter=luajava.bindClass "com.aslua.LuaAdapter"
-local ArrayListAdapter=bindClass("android.widget.ArrayListAdapter")
-local ArrayPageAdapter=bindClass("android.widget.ArrayPageAdapter")
+local ArrayListAdapter=bindClass("com.android.widget.ArrayListAdapter")
 local AdapterView=bindClass("android.widget.AdapterView")
 local ScaleType=bindClass("android.widget.ImageView$ScaleType")
 local TruncateAt=bindClass("android.text.TextUtils$TruncateAt")
@@ -444,18 +443,6 @@ local function setattribute(root,view,params,k,v,ids)
         view.setAdapter(adapter)
       end
     end
-  elseif k=="pages" and type(v)=="table" then --创建页项目
-    local ps={}
-    for n,o in ipairs(v) do
-      local tp=type(o)
-      if tp=="string" or tp=="table" then
-        table.insert(ps,loadlayout(o,root))
-      else
-        table.insert(ps,o)
-      end
-    end
-    local adapter=ArrayPageAdapter(View(ps))
-    view.setAdapter(adapter)
   elseif k=="textSize" then
     if tonumber(v) then
       view.setTextSize(tonumber(v))

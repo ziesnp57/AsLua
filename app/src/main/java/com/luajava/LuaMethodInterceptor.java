@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 
 public class LuaMethodInterceptor implements MethodInterceptor {
     private final LuaContext mContext;
-    private LuaObject obj;
+    private final LuaObject obj;
 
     public LuaMethodInterceptor(LuaObject obj) {
         this.obj = obj;
@@ -20,7 +20,7 @@ public class LuaMethodInterceptor implements MethodInterceptor {
     }
 
     @Override
-    public Object intercept(Object object, Object[] args, MethodProxy methodProxy) throws Exception {
+    public Object intercept(Object object, Object[] args, MethodProxy methodProxy) {
         synchronized (obj.L) {
             Method method = methodProxy.getOriginalMethod();
             String methodName = method.getName();
@@ -33,7 +33,7 @@ public class LuaMethodInterceptor implements MethodInterceptor {
             Class<?> retType = method.getReturnType();
 
             if (func.isNil()) {
-                if (retType.equals(boolean.class) || retType.equals(Boolean.class))
+                if (retType.equals(boolean.class))
                     return false;
                 else if (retType.isPrimitive() || Number.class.isAssignableFrom(retType))
                     return 0;
@@ -42,17 +42,16 @@ public class LuaMethodInterceptor implements MethodInterceptor {
             }
             Object[] na = new Object[args.length + 1];
             System.arraycopy(args,0,na,1,args.length);
-            na[0]=new SuperCall(object,methodProxy);
+            na[0]= new SuperCall(object, methodProxy);
             args=na;
             Object ret = null;
             try {
                 // Checks if returned type is void. if it is returns null.
                 if (retType.equals(Void.class) || retType.equals(void.class)) {
                     func.call(args);
-                    ret = null;
                 } else {
                     ret = func.call(args);
-                    if (ret != null && ret instanceof Double) {
+                    if (ret instanceof Double) {
                         ret = LuaState.convertLuaNumber((Double) ret, retType);
                     }
                 }
@@ -68,7 +67,7 @@ public class LuaMethodInterceptor implements MethodInterceptor {
         }
     }
 
-    private class SuperCall implements LuaMetaTable{
+    private static class SuperCall implements LuaMetaTable{
 
         private final Object mObject;
         private final MethodProxy mMethodProxy;

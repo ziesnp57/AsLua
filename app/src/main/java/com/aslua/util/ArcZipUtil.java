@@ -64,13 +64,9 @@ public class ArcZipUtil {
     }
 
     public static void compress(File srcFile, File destFile) throws IOException {
-        ZipArchiveOutputStream out = null;
-        try {
-            out = new ZipArchiveOutputStream(new BufferedOutputStream(
-                    new FileOutputStream(destFile), 1024));
+        try (ZipArchiveOutputStream out = new ZipArchiveOutputStream(new BufferedOutputStream(
+                new FileOutputStream(destFile), 1024))) {
             compressOneFile(srcFile, out, "");
-        } finally {
-            out.close();
         }
     }
 
@@ -88,18 +84,13 @@ public class ArcZipUtil {
                         out, (dir + srcFile.getName() + "/"));
             }
         } else { // 普通文件。
-            InputStream is = null;
-            try {
-                is = new BufferedInputStream(new FileInputStream(srcFile));
+            try (InputStream is = new BufferedInputStream(new FileInputStream(srcFile))) {
                 // 创建一个压缩包。
                 ZipArchiveEntry entry = new ZipArchiveEntry(srcFile, dir
                         + srcFile.getName());
                 out.putArchiveEntry(entry);
                 IOUtils.copy(is, out);
                 out.closeArchiveEntry();
-            } finally {
-                if (is != null)
-                    is.close();
             }
         }
     }
@@ -131,8 +122,7 @@ public class ArcZipUtil {
     }
 
     public static void decompressZip(File zipFile, String dir) throws IOException {
-        ZipFile zf = new ZipFile(zipFile);
-        try {
+        try (ZipFile zf = new ZipFile(zipFile)) {
             for (Enumeration<ZipArchiveEntry> entries = zf.getEntries(); entries
                     .hasMoreElements(); ) {
                 ZipArchiveEntry ze = entries.nextElement();
@@ -147,22 +137,10 @@ public class ArcZipUtil {
                     targetFile.getParentFile().mkdirs();
                 }
 
-                InputStream i = zf.getInputStream(ze);
-                OutputStream o = null;
-                try {
-                    o = new FileOutputStream(targetFile);
+                try (InputStream i = zf.getInputStream(ze); OutputStream o = new FileOutputStream(targetFile)) {
                     IOUtils.copy(i, o);
-                } finally {
-                    if (i != null) {
-                        i.close();
-                    }
-                    if (o != null) {
-                        o.close();
-                    }
                 }
             }
-        } finally {
-            zf.close();
         }
     }
 
@@ -176,7 +154,7 @@ public class ArcZipUtil {
 
         ZipFile zf = new ZipFile(zipFile);
         Enumeration<ZipArchiveEntry> zips = zf.getEntries();
-        ZipArchiveEntry zip = null;
+        ZipArchiveEntry zip;
         while (zips.hasMoreElements()) {
             zip = zips.nextElement();
             if (fileName.equals(zip.getName())) {
@@ -201,7 +179,7 @@ public class ArcZipUtil {
             throws IOException {
         ZipFile zf = new ZipFile(zipFile);
         Enumeration<ZipArchiveEntry> zips = zf.getEntries();
-        ZipArchiveEntry zip = null;
+        ZipArchiveEntry zip;
         while (zips.hasMoreElements()) {
             zip = zips.nextElement();
             if (fileName.equals(zip.getName())) {
@@ -214,7 +192,6 @@ public class ArcZipUtil {
     public Enumeration<ZipArchiveEntry> readZip(File zipFile)
             throws IOException {
         ZipFile zf = new ZipFile(zipFile);
-        Enumeration<ZipArchiveEntry> zips = zf.getEntries();
-        return zips;
+        return zf.getEntries();
     }
 }

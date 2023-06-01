@@ -1,14 +1,14 @@
 package com.yongle.aslua.ui.reflow
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.yongle.aslua.data.AppList
 
 class ReflowViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "开发中"
-    }
+    // 定义一个私有的 dataLists 变量
+    val appList = mutableListOf<AppList>()
 
-    val text: LiveData<String> = _text
+    // 定义一个公有的 isLoaSig 变量
+    var isLoaSig: Boolean = false
+
 }

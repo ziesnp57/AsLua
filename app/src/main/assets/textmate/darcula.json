@@ -325,69 +325,6 @@
             }
         },
         {
-            "name": "CSS Property-value",
-            "scope": "property-list.property-value,property-list.constant",
-            "settings": {
-                "foreground": "#A5C261"
-            }
-        },
-        {
-            "name": "CSS Property variable",
-            "scope": "support.type.property-name.variable.css,support.type.property-name.variable.scss,variable.scss",
-            "settings": {
-                "foreground": "#7A9EC2"
-            }
-        },
-        {
-            "name": "CSS Property entity",
-            "scope": "entity.other.attribute-name.class.css,entity.other.attribute-name.class.scss,entity.other.attribute-name.parent-selector-suffix.css,entity.other.attribute-name.parent-selector-suffix.scss",
-            "settings": {
-                "foreground": "#FFC66D"
-            }
-        },
-        {
-            "name": "CSS Property-value",
-            "scope": "property-list.property-value.rgb-value, keyword.other.unit.css,keyword.other.unit.scss",
-            "settings": {
-                "foreground": "#7A9EC2"
-            }
-        },
-        {
-            "name": "CSS Property-value function",
-            "scope": "property-list.property-value.function",
-            "settings": {
-                "foreground": "#FFC66D"
-            }
-        },
-        {
-            "name": "CSS constant variables",
-            "scope": "support.constant.property-value.css,support.constant.property-value.scss",
-            "settings": {
-                "foreground": "#A5C261"
-            }
-        },
-        {
-            "name": "CSS Tag",
-            "scope": "css.entity.name.tag,scss.entity.name.tag",
-            "settings": {
-                "foreground": "#CC8242"
-            }
-        },
-        {
-            "name": "CSS ID, Selector",
-            "scope": "meta.selector.css, entity.attribute-name.id, entity.other.attribute-name.pseudo-class.css,entity.other.attribute-name.pseudo-element.css",
-            "settings": {
-                "foreground": "#FFC66D"
-            }
-        },
-        {
-            "name": "CSS Keyword",
-            "scope": "keyword.scss,keyword.css",
-            "settings": {
-                "foreground": "#CC8242"
-            }
-        },
-        {
             "name": "Triple-slash Directive Tag",
             "scope": "triple-slash.tag",
             "settings": {
@@ -417,48 +354,6 @@
             "scope": "token.debug-token",
             "settings": {
                 "foreground": "#b267e6"
-            }
-        },
-        {
-            "name": "Python operators",
-            "scope": "keyword.operator.logical.python",
-            "settings": {
-                "foreground": "#CC8242"
-            }
-        },
-        {
-            "name": "Dart class type",
-            "scope": "support.class.dart",
-            "settings": {
-                "foreground": "#CC8242"
-            }
-        },
-        {
-            "name": "PHP variables",
-            "scope": ["variable.language.php", "variable.other.php"],
-            "settings": {
-                "foreground": "#9E7BB0"
-            }
-        },
-        {
-            "name": "Perl specific",
-            "scope": ["variable.other.readwrite.perl"],
-            "settings": {
-                "foreground": "#9E7BB0"
-            }
-        },
-        {
-            "name": "PHP variables",
-            "scope": ["variable.other.property.php"],
-            "settings": {
-                "foreground": "#CC8242"
-            }
-        },
-        {
-            "name": "PHP variables",
-            "scope": ["support.variable.property.php"],
-            "settings": {
-                "foreground": "#FFC66D"
             }
         }
     ]

@@ -1,82 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="10dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="10dp">
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView3"
+        android:layout_width="0dp"
+        android:layout_height="162dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeWidth="0dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image_view_item_transform"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/avatar_11"
+        app:layout_constraintStart_toStartOf="@+id/materialCardView3"
+        app:layout_constraintTop_toTopOf="@+id/materialCardView3" />
+
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:textSize="15sp"
+        app:layout_constraintStart_toEndOf="@+id/image_view_item_transform"
+        app:layout_constraintTop_toTopOf="@+id/materialCardView3" />
+
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="@+id/textView5"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="10dp"
+        android:paddingTop="8dp"
+        android:textSize="14sp"
+        android:maxLines="2"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+        app:layout_constraintEnd_toEndOf="@+id/materialCardView3"
+        app:layout_constraintStart_toStartOf="@+id/textView9"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/image_view_item_transform"
+        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/materialCardView3"
+        app:layout_constraintEnd_toEndOf="@+id/textView13"
+        app:layout_constraintStart_toStartOf="@+id/textView13">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="18dp"
+            android:layout_marginEnd="3dp"
+            app:srcCompat="@drawable/pinglun"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="29dp"
             android:layout_height="wrap_content"
-        android:paddingEnd="5dp"
-        android:paddingStart="5dp"
-        android:paddingTop="10dp">
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_marginEnd="2dp"
+            android:textSize="13sp" />
 
-        <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="162dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="18dp"
+            android:layout_marginEnd="3dp"
+            app:srcCompat="@drawable/dianzhang"
+            tools:ignore="ContentDescription" />
 
-            <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
-                    android:layout_marginLeft="12dp"
-                    android:orientation="vertical">
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="29dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_marginEnd="2dp"
+            android:textSize="13sp" />
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="16dp"
+            android:layout_height="18dp"
+            android:layout_marginEnd="3dp"
+            app:srcCompat="@drawable/gankan"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="29dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:textSize="13sp" />
 
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/image_view_item_transform"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            tools:src="@tools:sample/avatars"
-                            android:layout_marginTop="12dp"
-                            android:layout_marginRight="15dp"
-                            tools:ignore="RtlHardcoded" />
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="38dp"
-                            android:orientation="vertical">
-
-                        <TextView
-                                android:id="@+id/textView5"
-                                android:layout_width="wrap_content"
-                                android:layout_height="20dp"
-                                tools:text="This is item # xx" />
-
-                        <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="18dp"
-
-                                android:text="代码教程"
-                                tools:ignore="HardcodedText" />
-
-                    </LinearLayout>
-                </LinearLayout>
-
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="22dp"
-                        android:text="代码教程"
-                        android:layout_marginTop="5dp"
-                        tools:ignore="HardcodedText" />
-                <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="37dp"
-                        android:text="--需要导入LuaEditor.dex
---dex链接为 https://mpimg.cn/down.php/1f94ddab13f7f26c428a6e31c281a309.dex
---8.21 18:57 修了点bug，嗯，做完了。
---8.20 00:39 可以运行手册里的代码 22:05加了评论
---8.19 21:20 加了TabLayout和搜索 22:11又修改了一点
---夜色未央提供api，帖子id1203
---写爬虫 By@额可能是河北
---感谢大佬@一只小柒夏 帮我换了cjson
-require "
-                        tools:ignore="HardcodedText" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

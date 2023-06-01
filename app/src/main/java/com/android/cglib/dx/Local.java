@@ -33,7 +33,7 @@ public final class Local<T> {
     }
 
     static <T> Local<T> get(Code code, TypeId<T> type) {
-        return new Local<T>(code, type);
+        return new Local<>(code, type);
     }
 
     /**

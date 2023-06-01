@@ -1,5 +1,7 @@
 package com.luajava;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +31,7 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 	@Override
 	public boolean containsKey(Object key) {
 		// TODO: Implement this method
-		boolean b=false;
+		boolean b;
 		push();
 		try {
 			L.pushObjectValue(key);
@@ -49,17 +51,20 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 		return false;
 	}
 
+	@NonNull
 	@Override
 	public Set<Entry<K,V>> entrySet() {
 		// TODO: Implement this method
-		HashSet<Entry<K,V>> sets=new HashSet<Entry<K,V>>();
+		HashSet<Entry<K,V>> sets= new HashSet<>();
 		push();
 		L.pushNil();
 		while (L.next(-2) != 0) {
 			try {
-				sets.add(new LuaEntry<K,V>((K)L.toJavaObject(-2), (V)L.toJavaObject(-1)));
+				sets.add(new LuaEntry<>((K) L.toJavaObject(-2), (V) L.toJavaObject(-1)));
 			}
-			catch (LuaError e) {}
+			catch (LuaError e) {
+				throw new RuntimeException(e);
+			}
 			L.pop(1);
 		}
 		L.pop(1);
@@ -96,17 +101,20 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 		return b;
 	}
 
+	@NonNull
 	@Override
 	public Set<K> keySet() {
 		// TODO: Implement this method
-		HashSet<K> sets=new HashSet<K>();
+		HashSet<K> sets= new HashSet<>();
 		push();
 		L.pushNil();
 		while (L.next(-2) != 0) {
 			try {
 				sets.add((K)L.toJavaObject(-2));
 			}
-			catch (LuaError e) {}
+			catch (LuaError e) {
+				throw new RuntimeException(e);
+			}
 			L.pop(1);
 		}
 		L.pop(1);
@@ -128,7 +136,7 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 	}
 
 	@Override
-	public void putAll(Map p1) {
+	public void putAll(@NonNull Map p1) {
 		// TODO: Implement this method
 	}
 
@@ -183,6 +191,7 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 		return n;
 	}
 
+	@NonNull
 	@Override
 	public Collection<V> values() {
 		ArrayList<V> sets=new ArrayList<>();
@@ -215,9 +224,9 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 		registerValue(-1);
 	}
 
-	public class LuaEntry <K,V> implements Entry <K,V>{
+	public static class LuaEntry <K,V> implements Entry <K,V>{
 
-		private K mKey;
+		private final K mKey;
 
 		private V mValue;
 
@@ -251,14 +260,14 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 	}
 
 	public class Iterator{
-		private HashSet<LuaEntry<K,V>> set = null;
+		private final HashSet<LuaEntry<K,V>> set;
 		public Iterator(){
-			HashSet<LuaEntry<K,V>> sets=new HashSet<LuaEntry<K,V>>();
+			HashSet<LuaEntry<K,V>> sets= new HashSet<>();
 			push();
 			L.pushNil();
 			while (L.next(-2) != 0) {
 				try {
-					sets.add(new LuaEntry<K,V>((K)L.toJavaObject(-2), (V)L.toJavaObject(-1)));
+					sets.add(new LuaEntry<>((K) L.toJavaObject(-2), (V) L.toJavaObject(-1)));
 				}
 				catch (LuaError e) {}
 				L.pop(1);
@@ -268,7 +277,7 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 		}
 	}
 
-	private static volatile Set<String> dumped = new HashSet<String>();
+	private static volatile Set<String> dumped = new HashSet<>();
 
 	public Object runFunc(String funcName, Object...args) {
 		if (L != null) {
@@ -331,8 +340,7 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 			Double isdouble = null;
 			boolean isboolean = false;
 			if (ke != null) {
-				if(ke instanceof LuaObject) {
-					LuaObject key = (LuaObject) ke;
+				if(ke instanceof LuaObject key) {
 					if (!key.isNil()) {
 						sb = concat(sb, i);
 						sb.append("[");
@@ -408,8 +416,7 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 			if(valu==null){
 				sb.append("nil,\n");
 			}else {
-				if(valu instanceof LuaObject) {
-					LuaObject value = (LuaObject) valu;
+				if(valu instanceof LuaObject value) {
 					if (value.isNil()) {
 						sb.append("nil,\n");
 					}else{
@@ -476,39 +483,27 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 				arrayList.add(sb.toString());
 			}
 		}
-		if(BoolList!=null&&!BoolList.isEmpty()){
+		if(!BoolList.isEmpty()){
 			Collections.sort(BoolList);
 			for(String str:BoolList){
 				appendable.append(str);
 			}
 		}
-		if(LongList!=null&&!LongList.isEmpty()){
-			List<Long> list = new ArrayList<Long>();
-			java.util.Iterator<Long> item = LongList.keySet().iterator();
-			while(item.hasNext()){
-				list.add(item.next());
-			}
+		if(!LongList.isEmpty()){
+			List<Long> list = new ArrayList<>(LongList.keySet());
 			Collections.sort(list);
-			java.util.Iterator<Long> item2 = list.iterator();
-			while(item2.hasNext()){
-				Long key = item2.next();
+			for (Long key : list) {
 				appendable.append(LongList.get(key));
 			}
 		}
-		if(DbList!=null&&!DbList.isEmpty()){
-			List<Double> list = new ArrayList<Double>();
-			java.util.Iterator<Double> item = DbList.keySet().iterator();
-			while(item.hasNext()){
-				list.add(item.next());
-			}
+		if(!DbList.isEmpty()){
+			List<Double> list = new ArrayList<>(DbList.keySet());
 			Collections.sort(list);
-			java.util.Iterator<Double> item2 = list.iterator();
-			while(item2.hasNext()){
-				Double key = item2.next();
+			for (Double key : list) {
 				appendable.append(DbList.get(key));
 			}
 		}
-		if(arrayList!=null&&!arrayList.isEmpty()){
+		if(!arrayList.isEmpty()){
 			Collections.sort(arrayList);
 			for(String str:arrayList){
 				appendable.append(str);
@@ -520,7 +515,7 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 	}
 
 	public Appendable concat(Appendable appendable,int i){
-		if(i<=0){return appendable;};
+		if(i<=0){return appendable;}
 		try {
 			for(int a=0;a<i;a++){
 				appendable.append("\t");
@@ -532,8 +527,8 @@ public class LuaTable <K, V>extends LuaObject implements Map <K,V>{
 	}
 
 	public String tostring(){
-		dumped = new HashSet<String>();
-		String o = null;
+		dumped = new HashSet<>();
+		String o;
 		try {
 			o = dump(new StringBuffer(),1).toString();
 		} catch (IOException e) {

@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class LuaStack
 {
-	private final static HashMap<String,LuaState> luaStack=new HashMap<String,LuaState>();
+	private final static HashMap<String,LuaState> luaStack= new HashMap<>();
 	
 	public static void put(String name,LuaState L){
 		luaStack.put(name,L);

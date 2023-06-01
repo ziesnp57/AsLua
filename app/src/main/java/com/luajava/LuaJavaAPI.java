@@ -30,7 +30,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
 import com.android.cglib.proxy.EnhancerInterface;
-import com.android.cglib.proxy.MethodFilter;
 import com.aslua.LuaBitmap;
 import com.aslua.LuaEnhancer;
 import com.aslua.LuaGcable;
@@ -53,15 +52,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Thiago Ponte
  */
 public final class LuaJavaAPI {
-    private final static HashMap<Class<?>, HashMap<String, ArrayList<Method>>> methodCache3 = new HashMap<Class<?>, HashMap<String, ArrayList<Method>>>();
-    public final static HashMap<Class<?>, Method[]> methodsMap = new HashMap<Class<?>, Method[]>();
-    public final static HashMap<String, Method[]> methodCache = new HashMap<String, Method[]>();
-    private static HashMap<String, Method> stringMethodCache = new HashMap<>();
-    private static HashMap<String, Method> integerMethodCache = new HashMap<>();
-    private static HashMap<String, Method> doubleMethodCache = new HashMap<>();
-    private static HashMap<String, Method> boolMethodCache = new HashMap<>();
-    private static HashMap<String, Method> voidMethodCache = new HashMap<>();
-    private static AtomicInteger sJavaObjectIdx =new AtomicInteger();
+    private final static HashMap<Class<?>, HashMap<String, ArrayList<Method>>> methodCache3 = new HashMap<>();
+    public final static HashMap<Class<?>, Method[]> methodsMap = new HashMap<>();
+    public final static HashMap<String, Method[]> methodCache = new HashMap<>();
+    private static final HashMap<String, Method> stringMethodCache = new HashMap<>();
+    private static final HashMap<String, Method> integerMethodCache = new HashMap<>();
+    private static final HashMap<String, Method> doubleMethodCache = new HashMap<>();
+    private static final HashMap<String, Method> boolMethodCache = new HashMap<>();
+    private static final HashMap<String, Method> voidMethodCache = new HashMap<>();
+    private static final AtomicInteger sJavaObjectIdx =new AtomicInteger();
 
     private LuaJavaAPI() {
     }
@@ -90,7 +89,7 @@ public final class LuaJavaAPI {
             throws LuaError {
         LuaState L = LuaStateFactory.getExistingState(luaState);
         synchronized (L) {
-            int ret = 0;
+            int ret;
             if (type == 0)
                 if (checkMethod(L, obj, searchName) != 0)
                     return 2;
@@ -136,7 +135,7 @@ public final class LuaJavaAPI {
                         ret = method.invoke(obj);
                     } catch (Exception e) {
                         msgBuilder.append("  at ").append(method).append("\n  -> ").append((e.getCause() != null) ? e.getCause() : e).append("\n");
-                        throw new LuaError("Invalid method call.\n" + msgBuilder.toString());
+                        throw new LuaError("Invalid method call.\n" + msgBuilder);
                     }
                     // Void function returns null
                     if (ret == null && method.getReturnType().equals(Void.TYPE))
@@ -151,19 +150,19 @@ public final class LuaJavaAPI {
 
             if (top == 1) {
                 switch (L.type(1)) {
-                    case LuaState.LUA_TSTRING:
+                    case LuaState.LUA_TSTRING -> {
                         methodType = LuaState.LUA_TSTRING;
                         method = stringMethodCache.get(cacheName);
                         if (method != null)
                             objs[0] = L.toString(1);
-                        break;
-                    case LuaState.LUA_TBOOLEAN:
+                    }
+                    case LuaState.LUA_TBOOLEAN -> {
                         methodType = LuaState.LUA_TBOOLEAN;
                         method = boolMethodCache.get(cacheName);
                         if (method != null)
                             objs[0] = L.toBoolean(1);
-                        break;
-                    case LuaState.LUA_TNUMBER:
+                    }
+                    case LuaState.LUA_TNUMBER -> {
                         if (L.isInteger(1)) {
                             methodType = LuaState.LUA_TINTEGER;
                             method = integerMethodCache.get(cacheName);
@@ -176,7 +175,7 @@ public final class LuaJavaAPI {
                                 objs[0] = LuaState.convertLuaNumber(L.toNumber(1), method.getParameterTypes()[0]);
 
                         }
-                        break;
+                    }
                 }
                 if (method != null) {
                     Object ret;
@@ -187,7 +186,7 @@ public final class LuaJavaAPI {
                         ret = method.invoke(obj, objs);
                     } catch (Exception e) {
                         msgBuilder.append("  at ").append(method).append("\n  -> ").append((e.getCause() != null) ? e.getCause() : e).append("\n");
-                        throw new LuaError("Invalid method call.\n" + msgBuilder.toString());
+                        throw new LuaError("Invalid method call.\n" + msgBuilder);
                     }
 
                     // Void function returns null
@@ -237,21 +236,11 @@ public final class LuaJavaAPI {
                     }
 
                     switch (methodType) {
-                        case LuaState.LUA_TSTRING:
-                            stringMethodCache.put(cacheName, method);
-                            break;
-                        case LuaState.LUA_TINTEGER:
-                            integerMethodCache.put(cacheName, method);
-                            break;
-                        case LuaState.LUA_TNUMBER:
-                            doubleMethodCache.put(cacheName, method);
-                            break;
-                        case LuaState.LUA_TBOOLEAN:
-                            boolMethodCache.put(cacheName, method);
-                            break;
-                        case LuaState.LUA_TNIL:
-                            voidMethodCache.put(cacheName, method);
-                            break;
+                        case LuaState.LUA_TSTRING -> stringMethodCache.put(cacheName, method);
+                        case LuaState.LUA_TINTEGER -> integerMethodCache.put(cacheName, method);
+                        case LuaState.LUA_TNUMBER -> doubleMethodCache.put(cacheName, method);
+                        case LuaState.LUA_TBOOLEAN -> boolMethodCache.put(cacheName, method);
+                        case LuaState.LUA_TNIL -> voidMethodCache.put(cacheName, method);
                     }
                     // Void function returns null
                     if (ret == null && method.getReturnType().equals(Void.TYPE))
@@ -264,14 +253,14 @@ public final class LuaJavaAPI {
             }
 
             if (msgBuilder.length() > 0) {
-                throw new LuaError("Invalid method call.\n" + msgBuilder.toString());
+                throw new LuaError("Invalid method call.\n" + msgBuilder);
             }
             // If method is null means there isn't one receiving the given arguments
             for (Method m : methods) {
                 msgBuilder.append(m.toString());
                 msgBuilder.append("\n");
             }
-            throw new LuaError("Invalid method call. Invalid Parameters.\n" + msgBuilder.toString());
+            throw new LuaError("Invalid method call. Invalid Parameters.\n" + msgBuilder);
 
         }
     }
@@ -313,7 +302,7 @@ public final class LuaJavaAPI {
 
     public static int setFieldValue(LuaState L, Object obj, String fieldName) throws LuaError {
         synchronized (L) {
-            Field field = null;
+            Field field;
             Class objClass;
             boolean isClass = false;
 
@@ -368,24 +357,16 @@ public final class LuaJavaAPI {
         if (L.isObject(idx)) {
             return L.getObjectFromUserdata(idx).getClass().getName();
         }
-        switch (L.type(idx)) {
-            case LuaState.LUA_TSTRING:
-                return "string";
-            case LuaState.LUA_TNUMBER:
-                return "number";
-            case LuaState.LUA_TBOOLEAN:
-                return "boolean";
-            case LuaState.LUA_TFUNCTION:
-                return "function";
-            case LuaState.LUA_TTABLE:
-                return "table";
-            case LuaState.LUA_TTHREAD:
-                return "thread";
-            case LuaState.LUA_TLIGHTUSERDATA:
-            case LuaState.LUA_TUSERDATA:
-                return "userdata";
-        }
-        return "unkown";
+        return switch (L.type(idx)) {
+            case LuaState.LUA_TSTRING -> "string";
+            case LuaState.LUA_TNUMBER -> "number";
+            case LuaState.LUA_TBOOLEAN -> "boolean";
+            case LuaState.LUA_TFUNCTION -> "function";
+            case LuaState.LUA_TTABLE -> "table";
+            case LuaState.LUA_TTHREAD -> "thread";
+            case LuaState.LUA_TLIGHTUSERDATA, LuaState.LUA_TUSERDATA -> "userdata";
+            default -> "unkown";
+        };
     }
 
     /**
@@ -477,15 +458,13 @@ public final class LuaJavaAPI {
                         L.pushObjectValue(v);
                         L.rawSetI(-2, i + 1);
                     }
-                } else if (obj instanceof Collection) {
-                    Collection list = (Collection) obj;
+                } else if (obj instanceof Collection list) {
                     int i = 1;
                     for (Object v : list) {
                         L.pushObjectValue(v);
                         L.rawSetI(-2, i++);
                     }
-                } else if (obj instanceof Map) {
-                    Map map = (Map) obj;
+                } else if (obj instanceof Map map) {
                     for (Object o : map.entrySet()) {
                         Map.Entry entry = (Map.Entry) o;
                         L.pushObjectValue(entry.getKey());
@@ -512,15 +491,13 @@ public final class LuaJavaAPI {
                         asTable(L, Array.get(obj, i));
                         L.rawSetI(-2, i + 1);
                     }
-                } else if (obj instanceof Collection) {
-                    Collection list = (Collection) obj;
+                } else if (obj instanceof Collection list) {
                     int i = 1;
                     for (Object v : list) {
                         asTable(L, v);
                         L.rawSetI(-2, i++);
                     }
-                } else if (obj instanceof Map) {
-                    Map map = (Map) obj;
+                } else if (obj instanceof Map map) {
                     for (Object o : map.entrySet()) {
                         Map.Entry entry = (Map.Entry) o;
                         L.pushObjectValue(entry.getKey());
@@ -576,34 +553,17 @@ public final class LuaJavaAPI {
         try {
             clazz = Class.forName(className);
         } catch (Exception e) {
-            switch (className) {
-                case "boolean":
-                    clazz = Boolean.TYPE;
-                    break;
-                case "byte":
-                    clazz = Byte.TYPE;
-                    break;
-                case "char":
-                    clazz = Character.TYPE;
-                    break;
-                case "short":
-                    clazz = Short.TYPE;
-                    break;
-                case "int":
-                    clazz = Integer.TYPE;
-                    break;
-                case "long":
-                    clazz = Long.TYPE;
-                    break;
-                case "float":
-                    clazz = Float.TYPE;
-                    break;
-                case "double":
-                    clazz = Double.TYPE;
-                    break;
-                default:
-                    throw new LuaError("Class not found: " + className);
-            }
+            clazz = switch (className) {
+                case "boolean" -> Boolean.TYPE;
+                case "byte" -> Byte.TYPE;
+                case "char" -> Character.TYPE;
+                case "short" -> Short.TYPE;
+                case "int" -> Integer.TYPE;
+                case "long" -> Long.TYPE;
+                case "float" -> Float.TYPE;
+                case "double" -> Double.TYPE;
+                default -> throw new LuaError("Class not found: " + className);
+            };
         }
         return clazz;
     }
@@ -661,15 +621,12 @@ public final class LuaJavaAPI {
         LuaState L = LuaStateFactory.getExistingState(luaState);
 
         synchronized (L) {
-            final LuaTable<String, LuaFunction> t = new LuaTable<String, LuaFunction>(L, 2);
+            final LuaTable<String, LuaFunction> t = new LuaTable<>(L, 2);
             L.remove(2);
-            Class<?> cls = new LuaEnhancer(clazz).create(new MethodFilter() {
-                @Override
-                public boolean filter(Method method, String name) {
-                    if (t.containsKey(name))
-                        return true;
-                    return false;
-                }
+            Class<?> cls = new LuaEnhancer(clazz).create((method, name) -> {
+                if (t.containsKey(name))
+                    return true;
+                return false;
             });
             int r = getObjInstance(L, cls);
             if (r == 0)
@@ -716,14 +673,7 @@ public final class LuaJavaAPI {
     }
 
     private static int createAbstractProxy(LuaState L, Class<?> clazz) {
-        Class<?> cls = new LuaEnhancer(clazz).create(new MethodFilter() {
-            @Override
-            public boolean filter(Method method, String name) {
-                if ((method.getModifiers() & Modifier.ABSTRACT) == 0)
-                    return true;
-                return false;
-            }
-        });
+        Class<?> cls = new LuaEnhancer(clazz).create((method, name) -> (method.getModifiers() & Modifier.ABSTRACT) == 0);
         try {
             EnhancerInterface obj = (EnhancerInterface) cls.newInstance();
             obj.setMethodInterceptor_Enhancer(new LuaAbstractMethodInterceptor(L.getLuaObject(-1)));
@@ -753,8 +703,7 @@ public final class LuaJavaAPI {
                     if (obj.getClass().isArray() && Array.getLength(obj) == 0)
                         return createArray(L, obj.getClass());
                     L.pushNil();
-                    if (obj instanceof List) {
-                        List list = (List) obj;
+                    if (obj instanceof List list) {
                         while (L.next(2) != 0) {
                             list.add(L.toJavaObject(-1));
                             L.pop(1);
@@ -851,14 +800,14 @@ public final class LuaJavaAPI {
     }
 
     public static void javaGc(Object obj) throws LuaError {
-        Log.i("javaGc: ", obj + "");
+        Log.i("javaGc: ", String.valueOf(obj));
         if (obj == null)
             return;
         sJavaObjectIdx.addAndGet(-1);
     }
 
     public static void javaClose(Object obj) throws LuaError {
-        Log.i("javaClose: ", obj + "");
+        Log.i("javaClose: ", String.valueOf(obj));
         if (obj == null)
             return;
         sJavaObjectIdx.addAndGet(-1);
@@ -944,7 +893,7 @@ public final class LuaJavaAPI {
             Object[] objs = new Object[top - 1];
 
             Constructor[] constructors = clazz.getConstructors();
-            Constructor constructor = null;
+            Constructor constructor;
 
             StringBuilder msgBuilder = new StringBuilder();
             // gets method and arguments
@@ -980,7 +929,7 @@ public final class LuaJavaAPI {
             }
 
             if (msgBuilder.length() > 0) {
-                throw new LuaError("Invalid constructor method call.\n" + msgBuilder.toString());
+                throw new LuaError("Invalid constructor method call.\n" + msgBuilder);
             }
 
             for (Constructor c : constructors) {
@@ -988,7 +937,7 @@ public final class LuaJavaAPI {
                 msgBuilder.append("\n");
             }
 
-            throw new LuaError("Invalid constructor method call. Invalid Parameters.\n" + msgBuilder.toString());
+            throw new LuaError("Invalid constructor method call. Invalid Parameters.\n" + msgBuilder);
 
             /*// If method is null means there isn't one receiving the given arguments
             if (constructor == null) {
@@ -1025,11 +974,7 @@ public final class LuaJavaAPI {
 
     public static ArrayList<Method> getMethod(Class<?> clazz, String methodName, boolean isClass) {
         //String className = clazz.getName();
-        HashMap<String, ArrayList<Method>> cList = methodCache3.get(clazz);
-        if (cList == null) {
-            cList = new HashMap<>();
-            methodCache3.put(clazz, cList);
-        }
+        HashMap<String, ArrayList<Method>> cList = methodCache3.computeIfAbsent(clazz, k -> new HashMap<>());
 
         ArrayList<Method> mlist = cList.get(methodName);
         if (mlist == null) {
@@ -1040,21 +985,17 @@ public final class LuaJavaAPI {
             }
             for (Method method : methods) {
                 String name = method.getName();
-                ArrayList<Method> list = cList.get(name);
-                if (list == null) {
-                    list = new ArrayList<Method>();
-                    cList.put(name, list);
-                }
+                ArrayList<Method> list = cList.computeIfAbsent(name, k -> new ArrayList<>());
                 list.add(method);
             }
             mlist = cList.get(methodName);
         }
 
         if (mlist == null) {
-            mlist = new ArrayList<Method>();
+            mlist = new ArrayList<>();
         }
         if (isClass) {
-            ArrayList<Method> slist = new ArrayList<Method>();
+            ArrayList<Method> slist = new ArrayList<>();
             for (Method m : mlist) {
                 if (Modifier.isStatic(m.getModifiers()))
                     slist.add(m);
@@ -1190,8 +1131,7 @@ public final class LuaJavaAPI {
 
             Method method = null;
             boolean isClass = false;
-            if (obj instanceof Map) {
-                Map map = (Map) obj;
+            if (obj instanceof Map map) {
                 L.pushObjectValue(map.get(methodName));
                 return 1;
             } else if (obj instanceof Class) {
@@ -1204,7 +1144,7 @@ public final class LuaJavaAPI {
             if (Character.isLowerCase(c)) {
                 methodName = Character.toUpperCase(c) + methodName.substring(1);
             }
-            String cacheName = clazz.toString() + "@<-" + methodName;
+            String cacheName = clazz + "@<-" + methodName;
             if (!isClass)
                 method = voidMethodCache.get(cacheName);
             if (method == null) {
@@ -1249,8 +1189,7 @@ public final class LuaJavaAPI {
             Class clazz;
             boolean isClass = false;
 
-            if (obj instanceof Map) {
-                Map map = (Map) obj;
+            if (obj instanceof Map map) {
                 map.put(methodName, L.toJavaObject(-1));
                 return 1;
             } else if (obj instanceof Class) {
@@ -1260,7 +1199,7 @@ public final class LuaJavaAPI {
                 clazz = obj.getClass();
             }
 
-            if (methodName.length() > 2 && methodName.substring(0, 2).equals("on") && L.type(-1) == LuaState.LUA_TFUNCTION)
+            if (methodName.length() > 2 && methodName.startsWith("on") && L.type(-1) == LuaState.LUA_TFUNCTION)
                 return javaSetListener(L, obj, methodName, isClass);
 
             int ret = javaSetMethod(L, obj, methodName, isClass);
@@ -1371,19 +1310,19 @@ public final class LuaJavaAPI {
 
             Object[] objs = new Object[1];
             switch (L.type(-1)) {
-                case LuaState.LUA_TSTRING:
+                case LuaState.LUA_TSTRING -> {
                     methodType = LuaState.LUA_TSTRING;
                     method = stringMethodCache.get(cacheName);
                     if (method != null)
                         objs[0] = L.toString(-1);
-                    break;
-                case LuaState.LUA_TBOOLEAN:
+                }
+                case LuaState.LUA_TBOOLEAN -> {
                     methodType = LuaState.LUA_TBOOLEAN;
                     method = boolMethodCache.get(cacheName);
                     if (method != null)
                         objs[0] = L.toBoolean(-1);
-                    break;
-                case LuaState.LUA_TNUMBER:
+                }
+                case LuaState.LUA_TNUMBER -> {
                     if (L.isInteger(-1)) {
                         methodType = LuaState.LUA_TINTEGER;
                         method = integerMethodCache.get(cacheName);
@@ -1395,7 +1334,7 @@ public final class LuaJavaAPI {
                         if (method != null)
                             objs[0] = LuaState.convertLuaNumber(L.toNumber(-1), method.getParameterTypes()[0]);
                     }
-                    break;
+                }
             }
 
             if (method != null) {
@@ -1427,18 +1366,10 @@ public final class LuaJavaAPI {
                 }
 
                 switch (methodType) {
-                    case LuaState.LUA_TSTRING:
-                        stringMethodCache.put(cacheName, m);
-                        break;
-                    case LuaState.LUA_TINTEGER:
-                        integerMethodCache.put(cacheName, m);
-                        break;
-                    case LuaState.LUA_TNUMBER:
-                        doubleMethodCache.put(cacheName, m);
-                        break;
-                    case LuaState.LUA_TBOOLEAN:
-                        boolMethodCache.put(cacheName, m);
-                        break;
+                    case LuaState.LUA_TSTRING -> stringMethodCache.put(cacheName, m);
+                    case LuaState.LUA_TINTEGER -> integerMethodCache.put(cacheName, m);
+                    case LuaState.LUA_TNUMBER -> doubleMethodCache.put(cacheName, m);
+                    case LuaState.LUA_TBOOLEAN -> boolMethodCache.put(cacheName, m);
                 }
 
                 try {
@@ -1472,7 +1403,7 @@ public final class LuaJavaAPI {
                 }
             }
             if (buf.length() > 0)
-                throw new LuaError("Invalid setter " + methodName + ". Invalid Parameters.\n" + buf.toString() + L.toJavaObject(-1).getClass());
+                throw new LuaError("Invalid setter " + methodName + ". Invalid Parameters.\n" + buf + L.toJavaObject(-1).getClass());
         }
         return 0;
     }
@@ -1826,7 +1757,7 @@ public final class LuaJavaAPI {
     }
 
     public static void pushJavaObject() {
-        if(sJavaObjectIdx.addAndGet(1)>50000)
+        if(sJavaObjectIdx.addAndGet(1)>50000000)
             throw new RuntimeException("Out of JavaObject");
     }
 }

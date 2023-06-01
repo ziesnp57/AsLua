@@ -8,7 +8,7 @@
                       android:notificationTimeout="0"
                        android:canPerformGestures="true"
 
-                       android:settingsActivity="com.androlua.Main"
+                       android:settingsActivity=".MainActivity"
     />  <!-- android:description="@string/accsibility_service_description" -->
 
         <!--|flagRequestTouchExplorationMode|flagRequestEnhancedWebAccessibility|flagReportViewIds|flagRequestFilterKeyEvents"-->

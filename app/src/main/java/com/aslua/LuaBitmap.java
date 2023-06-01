@@ -7,13 +7,9 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Xml;
 
 import androidx.annotation.NonNull;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -34,7 +30,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 public class LuaBitmap {
-    static WeakHashMap<String, WeakReference<Bitmap>> cache = new WeakHashMap<String, WeakReference<Bitmap>>();
+    static WeakHashMap<String, WeakReference<Bitmap>> cache = new WeakHashMap<>();
 
     private static int l;
     private static long mCacheTime = 7 * 24 * 60 * 60 * 1000;
@@ -54,7 +50,7 @@ public class LuaBitmap {
         return f.exists() && mCacheTime!=-1 && System.currentTimeMillis() - f.lastModified() < mCacheTime;
     }
 
-    public static Bitmap getLocalBitmap(String url) throws FileNotFoundException, IOException {
+    public static Bitmap getLocalBitmap(String url) throws IOException {
 
         FileInputStream fis = new FileInputStream(url);
         Bitmap bitmap = BitmapFactory.decodeStream(fis);
@@ -89,7 +85,7 @@ public class LuaBitmap {
         }
         new File(path).delete();
         URL myFileUrl = new URL(url);
-        URLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
+        URLConnection conn = myFileUrl.openConnection();
         conn.setConnectTimeout(120000);
         conn.setDoInput(true);
         conn.connect();
@@ -104,8 +100,7 @@ public class LuaBitmap {
         out.close();
         is.close();
         //Bitmap bitmap = BitmapFactory.decodeStream(is);
-        Bitmap bitmap = decodeScale(context.getWidth(), new File(path));
-        return bitmap;
+        return decodeScale(context.getWidth(), new File(path));
     }
 
     public static Bitmap getAssetBitmap(Context context, String name) throws IOException {
@@ -134,12 +129,12 @@ public class LuaBitmap {
             bitmap = getLocalBitmap(context, path);
         }
 
-        cache.put(path, new WeakReference<Bitmap>(bitmap));
+        cache.put(path, new WeakReference<>(bitmap));
         return bitmap;
     }
 
     public static Bitmap decodeScale(int IMAGE_MAX_SIZE, File fis) {
-        Bitmap b = null;
+        Bitmap b;
 
         BitmapFactory.Options o = new BitmapFactory.Options();
         o.inJustDecodeBounds = true;
@@ -261,19 +256,10 @@ public class LuaBitmap {
             xmlBlockConstr.setAccessible(true);
             xmlParserNew.setAccessible(true);
             XmlPullParser parser = (XmlPullParser) xmlParserNew.invoke(
-                    xmlBlockConstr.newInstance((Object) binXml));
+                    xmlBlockConstr.newInstance(binXml));
 
-            if (Build.VERSION.SDK_INT >= 24) {
                 return Drawable.createFromXml(context.getResources(), parser);
-            } else {
-                // Before API 24, vector drawables aren't rendered correctly without compat lib
-                final AttributeSet attrs = Xml.asAttributeSet(parser);
-                int type = parser.next();
-                while (type != XmlPullParser.START_TAG) {
-                    type = parser.next();
-                }
-                return VectorDrawableCompat.createFromXmlInner(context.getResources(), parser, attrs, null);
-            }
+
 
         } catch (Exception e) {
             Log.e("__LuaBitmap__", "Vector creation failed", e);
@@ -288,7 +274,7 @@ public class LuaBitmap {
                 byte[] b= new byte[fi.available()];
                 fi.read(b);
                 fi.close();
-                return getVectorDrawable((Context) context,b);
+                return getVectorDrawable(context,b);
             } catch (IOException e) {
                 e.printStackTrace();
             }

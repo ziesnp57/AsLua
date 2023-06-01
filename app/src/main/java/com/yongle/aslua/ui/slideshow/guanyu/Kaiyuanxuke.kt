@@ -18,7 +18,7 @@ import com.yongle.aslua.databinding.ActivityKaiyuanxukeBinding
 class Kaiyuanxuke : AppCompatActivity() {
 
         // 声明变量
-        private lateinit var binding: ActivityKaiyuanxukeBinding
+        private var binding: ActivityKaiyuanxukeBinding? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -33,7 +33,7 @@ class Kaiyuanxuke : AppCompatActivity() {
             binding = ActivityKaiyuanxukeBinding.inflate(layoutInflater)
 
             // 设置布局
-            setContentView(binding.root)
+            setContentView(binding?.root)
 
             // 导航栏透明
             window.navigationBarColor = Color.TRANSPARENT
@@ -54,6 +54,12 @@ class Kaiyuanxuke : AppCompatActivity() {
                 ListItems("JsoupXpath", "JsoupXpath is an extension of Jsoup, which can use XPath to parse HTML", "Apache License 2.0", "https://www.apache.org/licenses/LICENSE-2.0", "https://github.com/zhegexiaohuozi/JsoupXpath"),
                 ListItems("Circleimageview", "A circular ImageView for Android", "Apache License 2.0", "https://www.apache.org/licenses/LICENSE-2.0", "https://github.com/hdodenhof/CircleImageView"),
                 ListItems("TinyPinyin", "A Chinese pinyin search library", "Apache License 2.0", "https://www.apache.org/licenses/LICENSE-2.0", "https://github.com/promeG/TinyPinyin"),
+                ListItems("Luajava", "LuaJava is a scripting tool for Java. It is based on Lua 5.4.4 (the same version used by PUC-Rio), but most of the library functions have been reimplemented in Java", "MIT License", "", ""),
+                ListItems("Lua", "Lua is a powerful, efficient, lightweight, embeddable scripting language. It supports procedural programming, object-oriented programming, functional programming, data-driven programming, and data description", "MIT License", "", ""),
+                ListItems("laqlite3","laqlite3 is a Lua binding to SQLite3", "MIT License", "", ""),
+                ListItems("cjson", "cjson is a fast JSON encoding/parsing module for Lua", "MIT License", "", ""),
+                ListItems("bson", "bson is a Lua binding to libbson", "MIT License", "", ""),
+                ListItems("luasocket", "luasocket is a Lua binding to the socket library", "MIT License", "", ""),
                 )
 
             // 自定义 Adapter，同时显示图片和文本
@@ -79,8 +85,8 @@ class Kaiyuanxuke : AppCompatActivity() {
                         // 跳转到浏览器
                         val intent = android.content.Intent()
                         intent.action = "android.intent.action.VIEW"
-                        val content_url = android.net.Uri.parse(item.text3)
-                        intent.data = content_url
+                        val contenturl = android.net.Uri.parse(item.text3)
+                        intent.data = contenturl
                         startActivity(intent)
                     }
 
@@ -88,8 +94,8 @@ class Kaiyuanxuke : AppCompatActivity() {
                         // 跳转到浏览器
                        val intent = android.content.Intent()
                         intent.action = "android.intent.action.VIEW"
-                        val content_url = android.net.Uri.parse(item.text4)
-                        intent.data = content_url
+                        val contenturl = android.net.Uri.parse(item.text4)
+                        intent.data = contenturl
                         startActivity(intent)
                     }
 
@@ -98,7 +104,7 @@ class Kaiyuanxuke : AppCompatActivity() {
             }
 
 // 设置 listView 的 adapter 和点击事件
-            binding.listView.adapter = CustomAdapters(this, R.layout.item_likaiy, listDatad)
+            binding?.listView?.adapter = CustomAdapters(this, R.layout.item_likaiy, listDatad)
 
 
 

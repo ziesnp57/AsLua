@@ -3,10 +3,8 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
-        jcenter()
     }
 }
-
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -18,4 +16,6 @@ dependencyResolutionManagement {
 
 
 rootProject.name = "代码手册"
-include(":app")
+include(
+    ":app"
+)

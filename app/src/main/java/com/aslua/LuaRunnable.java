@@ -13,6 +13,7 @@ import com.luajava.LuaState;
 import com.luajava.LuaStateFactory;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcable {
@@ -151,7 +152,6 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 		isRun = false;
 		L.gc(LuaState.LUA_GCCOLLECT, 1);
 		System.gc();
-		return ;
 	}
 
 	public void call(String func) {
@@ -214,24 +214,18 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 
 	}
 
+	//生成错误信息
 	private String errorReason(int error) {
-		switch (error) {
-			case 6:
-				return "error error";
-			case 5:
-				return "GC error";
-			case 4:
-				return "Out of memory";
-			case 3:
-				return "Syntax error";
-			case 2:
-				return "Runtime error";
-			case 1:
-				return "Yield error";
-		}
-		return "Unknown error " + error;
+		return switch (error) {
+			case 6 -> "错误";
+			case 5 -> "垃圾回收错误";
+			case 4 -> "内存溢出";
+			case 3 -> "语法错误";
+			case 2 -> "运行错误";
+			case 1 -> "Yield 错误";
+			default -> "未知错误 " + error;
+		};
 	}
-
 
 	private void initLua() throws LuaError {
 		L = LuaStateFactory.newLuaState();
@@ -311,7 +305,7 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 
 		}
 		catch (Exception e) {
-			mLuaContext.sendMsg(this.toString() + " " + e.getMessage());
+			mLuaContext.sendMsg(this + " " + e.getMessage());
 			quit();
 		}
 
@@ -319,7 +313,7 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 
 	private void newLuaRunnable(byte[] buf, Object...args) {
 		try {
-			int ok = 0;
+			int ok;
 			L.setTop(0);
 			ok = L.LloadBuffer(buf, "TimerTask");
 
@@ -329,8 +323,8 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 				L.remove(-2);
 				L.insert(-2);
 				int l=args.length;
-				for (int i=0;i < l;i++) {
-					L.pushObjectValue(args[i]);
+				for (Object arg : args) {
+					L.pushObjectValue(arg);
 				}
 				ok = L.pcall(l, 0, -2 - l);
 				if (ok == 0) {
@@ -340,13 +334,13 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 			throw new LuaError(errorReason(ok) + ": " + L.toString(-1));
 		}
 		catch (Exception e) {
-			mLuaContext.sendMsg(this.toString() + " " + e.getMessage());
+			mLuaContext.sendMsg(this + " " + e.getMessage());
 			quit();
 		}
 	}
 
 	private void doFile(String filePath, Object...args) throws LuaError {
-		int ok = 0;
+		int ok;
 		L.setTop(0);
 		ok = L.LloadFile(filePath);
 
@@ -356,8 +350,8 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 			L.remove(-2);
 			L.insert(-2);
 			int l=args.length;
-			for (int i=0;i < l;i++) {
-				L.pushObjectValue(args[i]);
+			for (Object arg : args) {
+				L.pushObjectValue(arg);
 			}
 			ok = L.pcall(l, 0, -2 - l);
 			if (ok == 0) {
@@ -369,7 +363,7 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 
 
 	public void doAsset(String name, Object...args) throws LuaError, IOException {
-		int ok = 0;
+		int ok;
 		byte[] bytes = LuaUtil.readAsset(mLuaContext.getContext(), name);
 		L.setTop(0);
 		ok = L.LloadBuffer(bytes, name);
@@ -380,8 +374,8 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 			L.remove(-2);
 			L.insert(-2);
 			int l=args.length;
-			for (int i=0;i < l;i++) {
-				L.pushObjectValue(args[i]);
+			for (Object arg : args) {
+				L.pushObjectValue(arg);
 			}
 			ok = L.pcall(l, 0, -2 - l);
 			if (ok == 0) {
@@ -401,8 +395,8 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 			L.remove(-2);
 			L.insert(-2);
 			int l=args.length;
-			for (int i=0;i < l;i++) {
-				L.pushObjectValue(args[i]);
+			for (Object arg : args) {
+				L.pushObjectValue(arg);
 			}
 			ok = L.pcall(l, 0, -2 - l);
 			if (ok == 0) {
@@ -425,8 +419,8 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 				L.insert(-2);
 
 				int l=args.length;
-				for (int i=0;i < l;i++) {
-					L.pushObjectValue(args[i]);
+				for (Object arg : args) {
+					L.pushObjectValue(arg);
 				}
 
 				int ok = L.pcall(l, 1, -2 - l);
@@ -458,23 +452,15 @@ public class LuaRunnable extends Thread implements Runnable,LuaMetaTable,LuaGcab
 			super.handleMessage(msg);
 			Bundle data=msg.getData();
 			switch (msg.what) {
-				case 0:
-					newLuaRunnable(data.getString("data"), (Object[])data.getSerializable("args"));
-					break;
-				case 1:
-					runFunc(data.getString("data"), (Object[])data.getSerializable("args"));
-					break;
-				case 2:
-					newLuaRunnable(data.getString("data"));
-					break;
-				case 3:
-					runFunc(data.getString("data"));
-					break;
-				case 4:
-					setField(data.getString("data"), ((Object[])data.getSerializable("args"))[0]);
-					break;
+				case 0 ->
+						newLuaRunnable(data.getString("data"), (Object[]) data.getSerializable("args"));
+				case 1 -> runFunc(data.getString("data"), (Object[]) data.getSerializable("args"));
+				case 2 -> newLuaRunnable(data.getString("data"));
+				case 3 -> runFunc(data.getString("data"));
+				case 4 ->
+						setField(data.getString("data"), ((Object[]) Objects.requireNonNull(data.getSerializable("args")))[0]);
 			}
 		}
-	};
+	}
 
-};
+}

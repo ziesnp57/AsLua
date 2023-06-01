@@ -19,7 +19,7 @@ import com.yongle.aslua.databinding.ActivityGuanyuBinding
 class Guanyu : AppCompatActivity() {
 
     // 声明变量
-    private lateinit var binding: ActivityGuanyuBinding
+    private var binding: ActivityGuanyuBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,19 +34,19 @@ class Guanyu : AppCompatActivity() {
         binding = ActivityGuanyuBinding.inflate(layoutInflater)
 
         // 设置布局
-        setContentView(binding.root)
+        setContentView(binding!!.root)
 
         // 导航栏透明
         window.navigationBarColor = Color.TRANSPARENT
 
 
         // 设置 用户协议 点击事件
-        binding.yonghuxieyi.setOnClickListener {
+        binding!!.yonghuxieyi.setOnClickListener {
             startActivity(Intent(this, Yonghuxieyi::class.java))
         }
 
         // 设置 隐私政策 点击事件
-        binding.yinsizhengce.setOnClickListener {
+        binding!!.yinsizhengce.setOnClickListener {
             startActivity(Intent(this, Yinsizhengce::class.java))
         }
 
@@ -78,8 +78,8 @@ class Guanyu : AppCompatActivity() {
         }
 
 // 设置 listView 的 adapter 和点击事件
-        binding.listView.adapter = CustomAdapter(this, R.layout.item_slideshow, listData)
-        binding.listView.setOnItemClickListener { _, _, position, _ ->
+        binding!!.listView.adapter = CustomAdapter(this, R.layout.item_slideshow, listData)
+        binding!!.listView.setOnItemClickListener { _, _, position, _ ->
 
             // 点击事件
             when (position) {
@@ -105,7 +105,6 @@ class Guanyu : AppCompatActivity() {
         }
 
     }
-
 
     // 设置返回按钮的点击事件
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

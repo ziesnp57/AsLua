@@ -15,7 +15,7 @@ import com.yongle.aslua.databinding.ActivityFankuiBinding
 
 class Fankui : AppCompatActivity() {
     // 声明变量
-    private lateinit var binding: ActivityFankuiBinding
+    private var binding: ActivityFankuiBinding? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,10 +32,10 @@ class Fankui : AppCompatActivity() {
         binding = ActivityFankuiBinding.inflate(layoutInflater)
 
         // 设置布局
-        setContentView(binding.root)
+        setContentView(binding!!.root)
 
         // 设置webview
-        val  webView = binding.webview
+        val webView = binding!!.webview
 
         // 设置支持js
         webView.settings.javaScriptEnabled = true
@@ -47,7 +47,10 @@ class Fankui : AppCompatActivity() {
 
         // 设置webview的客户端
         val webViewClient: WebViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
                 view?.loadUrl(request?.url.toString())
                 return true
             }
@@ -62,14 +65,16 @@ class Fankui : AppCompatActivity() {
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
 
         // 判断是否可以返回上一页
-                if (binding.webview.canGoBack()) {
-                    binding.webview.goBack()
-                   if (!binding.webview.canGoBack()) {
-                       finish()
-                   }
-                }
+        if (binding!!.webview.canGoBack()) {
+            binding!!.webview.goBack()
+            if (!binding!!.webview.canGoBack()) {
+                finish()
+            }
+        }
         return true
     }
+    
+
     // 设置返回按钮的点击事件
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {

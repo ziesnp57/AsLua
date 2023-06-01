@@ -151,7 +151,6 @@ public class LuaThread extends Thread implements Runnable,LuaMetaTable,LuaGcable
 		isRun = false;
 		L.gc(LuaState.LUA_GCCOLLECT, 1);
 		System.gc();
-		return ;
 	}
 
 	public void call(String func) {
@@ -183,7 +182,7 @@ public class LuaThread extends Thread implements Runnable,LuaMetaTable,LuaGcable
 
 	public void push(int what, String s) {
 		if (!isRun) {
-			mLuaContext.sendMsg("thread is not running");
+			mLuaContext.sendMsg("线程未运行");
 			return;
 		}
 
@@ -199,7 +198,7 @@ public class LuaThread extends Thread implements Runnable,LuaMetaTable,LuaGcable
 
 	public void push(int what, String s, Object[] args) {
 		if (!isRun) {
-			mLuaContext.sendMsg("thread is not running");
+			mLuaContext.sendMsg("线程未运行");
 			return;
 		}
 
@@ -214,22 +213,17 @@ public class LuaThread extends Thread implements Runnable,LuaMetaTable,LuaGcable
 
 	}
 
+	//生成错误信息
 	private String errorReason(int error) {
-		switch (error) {
-			case 6:
-				return "error error";
-			case 5:
-				return "GC error";
-			case 4:
-				return "Out of memory";
-			case 3:
-				return "Syntax error";
-			case 2:
-				return "Runtime error";
-			case 1:
-				return "Yield error";
-		}
-		return "Unknown error " + error;
+		return switch (error) {
+			case 6 -> "错误";
+			case 5 -> "垃圾回收错误";
+			case 4 -> "内存溢出";
+			case 3 -> "语法错误";
+			case 2 -> "运行错误";
+			case 1 -> "Yield 错误";
+			default -> "未知错误 " + error;
+		};
 	}
 
 
@@ -319,7 +313,7 @@ public class LuaThread extends Thread implements Runnable,LuaMetaTable,LuaGcable
 	
 	private void newLuaThread(byte[] buf, Object...args) {
 		try {
-			int ok = 0;
+			int ok;
 			L.setTop(0);
 			ok = L.LloadBuffer(buf, "TimerTask");
 
@@ -346,7 +340,7 @@ public class LuaThread extends Thread implements Runnable,LuaMetaTable,LuaGcable
 	}
 
 	private void doFile(String filePath, Object...args) throws LuaError {
-		int ok = 0;
+		int ok;
 		L.setTop(0);
 		ok = L.LloadFile(filePath);
 
@@ -369,7 +363,7 @@ public class LuaThread extends Thread implements Runnable,LuaMetaTable,LuaGcable
 
 
 	public void doAsset(String name, Object...args) throws LuaError, IOException {
-		int ok = 0;
+		int ok;
 		byte[] bytes = LuaUtil.readAsset(mLuaContext.getContext(), name);
 		L.setTop(0);
 		ok = L.LloadBuffer(bytes, name);
@@ -437,7 +431,7 @@ public class LuaThread extends Thread implements Runnable,LuaMetaTable,LuaGcable
 			}
 		}
 		catch (LuaError e) {
-			mLuaContext.sendError(this.toString()+" "+funcName, e);
+			mLuaContext.sendError(this +" "+funcName, e);
 		}
 
 	}
@@ -475,6 +469,6 @@ public class LuaThread extends Thread implements Runnable,LuaMetaTable,LuaGcable
 					break;
 			}
 		}
-	};
+	}
 
-};
+}

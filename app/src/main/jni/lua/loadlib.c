@@ -471,8 +471,8 @@ static const char *getnextfilename (char **path, char *end) {
 static void pusherrornotfound (lua_State *L, const char *path) {
   luaL_Buffer b;
   luaL_buffinit(L, &b);
-  luaL_addstring(&b, "no file '");
-  luaL_addgsub(&b, path, LUA_PATH_SEP, "'\n\tno file '");
+  luaL_addstring(&b, "无文件 '");
+  luaL_addgsub(&b, path, LUA_PATH_SEP, "'\n\t无文件 '");
   luaL_addstring(&b, "'");
   luaL_pushresult(&b);
 }

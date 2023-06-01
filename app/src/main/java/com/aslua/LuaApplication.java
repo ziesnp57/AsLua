@@ -3,13 +3,14 @@ package com.aslua;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.FileProvider;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import com.luajava.LuaState;
 import com.luajava.LuaTable;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class LuaApplication extends Application implements LuaContext {
@@ -27,7 +29,7 @@ public class LuaApplication extends Application implements LuaContext {
 
     private static LuaApplication mApp;
     // 静态变量mApp用于存储LuaApplication的实例
-    static private HashMap<String, Object> data = new HashMap<>();
+    static private final HashMap<String, Object> data = new HashMap<>();
     // 静态哈希映射变量data用于存储数据
     protected String localDir;
     // 字符串变量localDir用于存储本地目录路径
@@ -65,7 +67,7 @@ public class LuaApplication extends Application implements LuaContext {
             String[] p = {
                     getPackageName()
             };
-            switch (uri.getScheme()) {
+            switch (Objects.requireNonNull(uri.getScheme())) {
                 case "content" -> {
                     Cursor cursor = getContentResolver().query(uri, p, null, null, null);
                     if (cursor != null) {
@@ -170,7 +172,7 @@ public class LuaApplication extends Application implements LuaContext {
         // 应用创建时调用的方法
         super.onCreate();
         mApp = this;
-        CrashHandler crashHandler = CrashHandler.getInstance();
+        CrashHandler crashHandler = new CrashHandler();
         // 实例化CrashHandler
         crashHandler.init(getApplicationContext());
         // 初始化CrashHandler
@@ -200,7 +202,7 @@ public class LuaApplication extends Application implements LuaContext {
         if (!destDir.exists()) {
             boolean b = destDir.mkdirs();
             if(!b){
-                luaExtDir = this.getExternalFilesDir(null).getAbsolutePath() + "/AsLua";
+                luaExtDir = Objects.requireNonNull(this.getExternalFilesDir(null)).getAbsolutePath() + "/AsLua";
             }
         }
         destDir = new File(luaExtDir);
@@ -217,6 +219,7 @@ public class LuaApplication extends Application implements LuaContext {
         // 初始化lua加载路径
         luaCpath = getApplicationInfo().nativeLibraryDir + "/lib?.so" + ";" + libDir + "/lib?.so";
 
+
         // 初始化lua工作目录
         luaLpath = luaMdDir + "/?.lua;" + luaMdDir + "/lua/?.lua;" + luaMdDir + "/?/init.lua;";
 
@@ -226,10 +229,7 @@ public class LuaApplication extends Application implements LuaContext {
     private static SharedPreferences getSharedPreferences(Context context) {
         // 获取SharedPreferences实例（根据API版本）
         Context deContext = context.createDeviceProtectedStorageContext();
-        if (deContext != null)
-            return PreferenceManager.getDefaultSharedPreferences(deContext);
-        else
-            return PreferenceManager.getDefaultSharedPreferences(context);
+        return PreferenceManager.getDefaultSharedPreferences(Objects.requireNonNullElse(deContext, context));
     }
 
     @Override
@@ -327,6 +327,7 @@ public class LuaApplication extends Application implements LuaContext {
             luaExtDir = new File(sdDir , dir).getAbsolutePath();
         } else {
             File[] fs = new File("/storage").listFiles();
+            assert fs != null;
             for (File f : fs) {
                 String[] ls = f.list();
                 if (ls == null)

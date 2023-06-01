@@ -132,24 +132,17 @@ public class LuaTimerTask extends TimerTaskX
 		return L.toJavaObject(-1);
 	}
 
-	private String errorReason(int error)
-	{
-		switch (error)
-		{
-			case 6:
-				return "error error";
-			case 5:
-				return "GC error";
-			case 4:
-				return "Out of memory";
-			case 3:
-				return "Syntax error";
-			case 2:
-				return "Runtime error";
-			case 1:
-				return "Yield error";
-		}
-		return "Unknown error " + error;
+	//生成错误信息
+	private String errorReason(int error) {
+		return switch (error) {
+			case 6 -> "错误";
+			case 5 -> "垃圾回收错误";
+			case 4 -> "内存溢出";
+			case 3 -> "语法错误";
+			case 2 -> "运行错误";
+			case 1 -> "Yield 错误";
+			default -> "未知错误 " + error;
+		};
 	}
 	
 	private void initLua() throws LuaError

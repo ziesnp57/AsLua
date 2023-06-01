@@ -37,7 +37,7 @@ public abstract class JavaFunction
 	/**
 	 * This is the state in which this function will exist.
 	 */
-	protected LuaState L;
+	protected final LuaState L;
 	
 	/**
 	 * This method is called from Lua. Any parameters can be taken with

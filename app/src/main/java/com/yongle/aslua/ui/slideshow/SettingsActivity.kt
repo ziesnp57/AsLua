@@ -36,12 +36,12 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+
     // 设置返回按钮的点击事件
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                @Suppress("DEPRECATION")
-                onBackPressed()
+                finish()
                 return true
             }
         }

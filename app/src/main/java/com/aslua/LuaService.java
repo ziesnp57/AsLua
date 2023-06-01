@@ -40,6 +40,7 @@ import dalvik.system.DexClassLoader;
 
 public class LuaService extends Service implements LuaContext,LuaBroadcastReceiver.OnReceiveListener {
 
+
 	private static LuaService _this;
 	public String luaDir;
 	public String luaCpath;
@@ -340,7 +341,7 @@ public class LuaService extends Service implements LuaContext,LuaBroadcastReceiv
 		// TODO: Implement this method
 		runFunc("onDestroy");
 		if(mReceiver!=null)
-		unregisterReceiver(mReceiver);
+			unregisterReceiver(mReceiver);
 		super.onDestroy();
 	}
 

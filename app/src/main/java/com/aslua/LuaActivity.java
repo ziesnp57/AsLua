@@ -5,7 +5,6 @@ import android.app.ActivityManager;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.FileProvider;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -17,11 +16,9 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -41,7 +38,6 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
-import android.widget.ArrayListAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -50,7 +46,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import com.android.widget.ArrayListAdapter;
 import com.luajava.JavaFunction;
 import com.luajava.LuaError;
 import com.luajava.LuaObject;
@@ -67,10 +65,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -92,7 +90,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
     private ArrayListAdapter<String> adapter;  // 列表适配器
     private LuaState L;  // Lua状态
     private String luaPath;  // Lua文件路径
-    private StringBuilder toastbuilder = new StringBuilder();  // Toast构建器
+    private final StringBuilder toastbuilder = new StringBuilder();  // Toast构建器
     private Boolean isCreate = false;  // 是否已创建
     private Toast toast;  // Toast
     private LinearLayout layout;  // 线性布局
@@ -114,18 +112,19 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
     private boolean mDebug = true;  // 调试模式
     private LuaResources mResources;  // Lua资源
     private Resources.Theme mTheme;  // 主题
-    private ArrayList<LuaGcable> gclist = new ArrayList<LuaGcable>();  // GC对象列表
+    private ArrayList<LuaGcable> gclist = new ArrayList<>();  // GC对象列表
     private String pageName = "main";  // 页面名称
     private static String sKey;  // 静态键值
     private static final HashMap<String, LuaActivity> sLuaActivityMap = new HashMap<>();  // LuaActivity映射表
     private LuaObject mOnKeyShortcut;  // onKeyShortcut回调
+
 
     private static byte[] readAll(InputStream input) throws IOException {
         // 创建一个字节数组输出流，用于存储读取的数据
         ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
         // 创建一个缓冲区数组
         byte[] buffer = new byte[4096];
-        int n = 0;
+        int n;
         // 从输入流中读取数据，直到读取到末尾
         while (-1 != (n = input.read(buffer))) {
             // 将读取的数据写入字节数组输出流
@@ -153,20 +152,26 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        //setTheme(android.R.style.Theme_Material_Light_NoActionBar);
 
-        // 设置返回按钮
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // 获取传递过来的参数
+        String name = getIntent().getStringExtra("name");
 
-        setTitle(R.string.daimatiaoshi);
+        if (name != null) {
+            // 设置标题
+            setTitle(name);
+
+            // 设置返回按钮
+            Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        }
+
 
         //隐藏标题栏
         //getSupportActionBar().hide();
 
-        // 设置主题为Holo Light无ActionBar
 
-        //Intent intent=getIntent();
-        //int theme=intent.getIntExtra("theme", android.R.style.Theme_Holo_Light_NoActionBar);
+       // Intent intent=getIntent();
+       // int theme=intent.getIntExtra("theme", android.R.style.Theme_Holo_Light_NoActionBar);
 
         // 获取Intent，可以从Intent中获取主题信息，这里注释掉了
 
@@ -195,13 +200,16 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
 
         status.setTextColor(Color.BLACK);
         scroll.addView(status, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        //layout.addView(scroll, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
         status.setText("");
         status.setTextIsSelectable(true);
-        // 列表视图
+        // 创建列表适配器
         ListView list = new ListView(this);
         list.setFastScrollEnabled(true);
-        adapter = new ArrayListAdapter<String>(this, android.R.layout.simple_list_item_1) {
+
+
+
+        adapter = new ArrayListAdapter<>(this, android.R.layout.simple_list_item_1) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 TextView view = (TextView) super.getView(position, convertView, parent);
@@ -210,18 +218,17 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
                 return view;
             }
         };
+
         list.setAdapter(adapter);
         layout.addView(list, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
-        // 创建布局和相关的视图组件
 
         // 定义文件夹
         LuaApplication app = (LuaApplication) getApplication();
 
         if(app.getClass()!=LuaApplication.class){
             while (true){
-                if(app.getClass()==LuaApplication.class)
-                    break;
+                app.getClass();
             }
         }
         localDir = app.getLocalDir();
@@ -308,8 +315,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
 
         // 获取Lua脚本中定义的回调函数
 
-        check2();
-        check3();
+
         try {
             throw new RuntimeException("");
         } catch (Exception e) {
@@ -320,7 +326,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
             String[] bs = s.split("\n");
             for (int i = 1; i < bs.length; i++) {
                 String l = bs[i];
-                if (l.contains("com.aslua") || l.contains("com.nirenr.talkman") || l.contains("android.app") || l.contains("android.os") || l.contains("java.lang") || l.contains("com.android"))
+                if (l.contains("com.aslua") || l.contains("android.app") || l.contains("android.os") || l.contains("java.lang") || l.contains("com.android"))
                     continue;
                 runFunc("onHook");
             /*LuaDialog d = new LuaDialog(this);
@@ -334,83 +340,6 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
     }
 
 
-
-    private void chcek1() {
-        try {
-            throw new Exception("");
-        } catch (Exception localException) {
-            StackTraceElement[] arrayOfStackTraceElement = localException.getStackTrace();
-            // 遍历整个堆栈查询xposed相关信息
-            for (StackTraceElement stackTraceElement : arrayOfStackTraceElement) {
-                String name = stackTraceElement.getClassName();
-                if (name.equals("de.robv.android.xposed.XposedBridge") || name.contains("xposed") || name.contains("xposed")) {
-                    LuaDialog d = new LuaDialog(this);
-                    d.setTitle("提示2");
-                    d.setMessage("你的手机运行环境不安全");
-                    d.setPosButton("确定");
-                    d.show();
-                    return;
-                }
-            }
-        }
-    }
-
-    private void check2() {
-        try {
-            Field v0_1 = ClassLoader.getSystemClassLoader()
-                    .loadClass("de.robv.android.xposed.XposedBridge")
-                    .getDeclaredField("disableHooks");
-            v0_1.setAccessible(true);
-            v0_1.set(null, true);
-        } catch (Exception e) {
-            // e.printStackTrace();
-           /* StackTraceElement[] arrayOfStackTraceElement = e.getStackTrace();
-            // 遍历整个堆栈查询xposed相关信息
-            for (StackTraceElement stackTraceElement : arrayOfStackTraceElement) {
-                String name = stackTraceElement.getClassName();
-                if (name.equals("de.robv.android.xposed.XposedBridge") || name.contains("xposed") || name.contains("xposed")) {
-                    LuaDialog d = new LuaDialog(this);
-                    d.setTitle("提示2");
-                    d.setMessage("你的手机运行环境不安全");
-                    d.setPosButton("确定");
-                    d.show();
-                    return;
-                }
-            }*/
-        }
-    }
-
-    private void check3() {
-        try {
-            Object localObject = ClassLoader.getSystemClassLoader()
-                    .loadClass("de.robv.android.xposed.XposedHelpers").newInstance();
-            // 如果加载类失败 则表示当前环境没有xposed
-            if (localObject != null) {
-                a(localObject, "fieldCache");
-                a(localObject, "methodCache");
-                a(localObject, "constructorCache");
-            }
-        } catch (Exception e) {
-            //e.printStackTrace();
-        }
-    }
-
-    private void a(Object arg5, String arg6) {
-        try {
-            // 从XposedHelpers中读取相关的hook信息
-            Field v0_1 = arg5.getClass().getDeclaredField(arg6);
-            v0_1.setAccessible(true);
-            HashMap map = (HashMap) v0_1.get(arg5);
-            map.clear();
-            LuaDialog d = new LuaDialog(this);
-            d.setTitle("提示3");
-            d.setMessage("你的手机运行环境不安全");
-            d.setPosButton("确定");
-            d.show();
-        } catch (Exception v0) {
-            v0.printStackTrace();
-        }
-    }
 
     public void setFragment(Fragment fragment) {
         isSetViewed = true;
@@ -472,13 +401,8 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
             String[] p = {
                     MediaStore.Images.Media.DATA
             };
-            switch (uri.getScheme()) {
-                case "content":
-                /*try {
-                    InputStream in = getContentResolver().openInputStream(uri);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
+            switch (Objects.requireNonNull(uri.getScheme())) {
+                case "content" -> {
 
                     Cursor cursor = getContentResolver().query(uri, p, null, null, null);
                     if (cursor != null) {
@@ -489,10 +413,8 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
                         cursor.moveToFirst();
                         cursor.close();
                     }
-                    break;
-                case "file":
-                    path = uri.getPath();
-                    break;
+                }
+                case "file" -> path = uri.getPath();
             }
         }
         return path;
@@ -509,11 +431,12 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
     public String getLuaPath() {
         Intent intent = getIntent();
         Uri uri = intent.getData();
-        String path = null;
+        String path;
         if (uri == null)
             return null;
 
         path = uri.getPath();
+        assert path != null;
         if (!new File(path).exists() && new File(getLuaPath(path)).exists())
             path = getLuaPath(path);
 
@@ -660,6 +583,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
             luaExtDir = new File(sdDir, dir).getAbsolutePath();
         } else {
             File[] fs = new File("/storage").listFiles();
+            assert fs != null;
             for (File f : fs) {
                 String[] ls = f.list();
                 if (ls == null)
@@ -720,7 +644,6 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
      *
      * @param assetName       压缩包文件名
      * @param outputDirectory 输出目录
-     * @throws IOException
      */
     public void unZipAssets(String assetName, String outputDirectory) throws IOException {
         //创建解压目标目录
@@ -729,7 +652,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
         if (!file.exists()) {
             file.mkdirs();
         }
-        InputStream inputStream = null;
+        InputStream inputStream;
         //打开压缩文件
         try {
             inputStream = this.getAssets().open(assetName);
@@ -744,13 +667,11 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
         //使用1Mbuffer
         byte[] buffer = new byte[4096];
         //解压时字节计数
-        int count = 0;
+        int count;
         //如果进入点为空说明已经遍历完所有压缩包中文件和目录
         while (zipEntry != null) {
             //如果是一个目录
             if (zipEntry.isDirectory()) {
-                //String name = zipEntry.getName();
-                //name = name.substring(0, name.length() - 1);
                 file = new File(outputDirectory + File.separator + zipEntry.getName());
                 file.mkdir();
             } else {
@@ -842,33 +763,19 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
         intent.setClassName(getPackageName(), LuaActivity.class.getName());
         intent.setData(Uri.parse(text));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ShortcutManager scm = (ShortcutManager) getSystemService(SHORTCUT_SERVICE);
-            ShortcutInfo si = new ShortcutInfo.Builder(this, text)
-                    .setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher))
-                    .setShortLabel(name)
-                    .setIntent(intent)
-                    .build();
-            try {
-                scm.requestPinShortcut(si, null);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, "添加快捷方式出错", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Intent addShortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
-            Intent.ShortcutIconResource icon = Intent.ShortcutIconResource.fromContext(this,
-                    R.mipmap.ic_launcher);
-            addShortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
-            addShortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
-            addShortcut.putExtra("duplicate", 0);
-            addShortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);
-            sendBroadcast(addShortcut);
-            Toast.makeText(this, "已添加快捷方式", Toast.LENGTH_SHORT).show();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        ShortcutManager scm = (ShortcutManager) getSystemService(SHORTCUT_SERVICE);
+        ShortcutInfo si = new ShortcutInfo.Builder(this, text)
+                .setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher))
+                .setShortLabel(name)
+                .setIntent(intent)
+                .build();
+        try {
+            scm.requestPinShortcut(si, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "添加快捷方式出错", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -878,32 +785,19 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
         intent.setClassName(getPackageName(), LuaActivity.class.getName());
         intent.setData(Uri.parse(text));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ShortcutManager scm = (ShortcutManager) getSystemService(SHORTCUT_SERVICE);
-            ShortcutInfo si = new ShortcutInfo.Builder(this, text)
-                    .setIcon(Icon.createWithFilePath(icon))
-                    .setShortLabel(name)
-                    .setIntent(intent)
-                    .build();
-            try {
-                scm.requestPinShortcut(si, null);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, "添加快捷方式出错", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Intent addShortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
-            //Intent.ShortcutIconResource icon = Intent.ShortcutIconResource.fromContext(this, R.drawable.icon);
-            addShortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
-            addShortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
-            addShortcut.putExtra("duplicate", 0);
-            addShortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON, BitmapFactory.decodeFile(icon));
-            sendBroadcast(addShortcut);
-            Toast.makeText(this, "已添加快捷方式", Toast.LENGTH_SHORT).show();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        ShortcutManager scm = (ShortcutManager) getSystemService(SHORTCUT_SERVICE);
+        ShortcutInfo si = new ShortcutInfo.Builder(this, text)
+                .setIcon(Icon.createWithFilePath(icon))
+                .setShortLabel(name)
+                .setIntent(intent)
+                .build();
+        try {
+            scm.requestPinShortcut(si, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "添加快捷方式出错", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1025,8 +919,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
                 } else {
                     Object[] arg = new Object[res.length + 1];
                     arg[0] = name;
-                    for (int i = 0; i < res.length; i++)
-                        arg[i + 1] = res[i];
+                    System.arraycopy(res, 0, arg, 1, res.length);
                     Object ret = runFunc("onResult", arg);
                     if (ret != null && ret.getClass() == Boolean.class && (Boolean) ret)
                         return;
@@ -1103,6 +996,16 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        // 获取传递过来的参数
+        String name = getIntent().getStringExtra("name");
+
+        if (name != null) {
+            if (item.getItemId() == android.R.id.home) {
+                this.finish();
+            }
+        }
+
         Object ret = null;
         if (!item.hasSubMenu())
             ret = runFunc("onOptionsItemSelected", item);
@@ -1115,7 +1018,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
         return optionsMenu;
     }
 
-  /*  @Override
+/*    @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
 
         if (!item.hasSubMenu())
@@ -1281,10 +1184,8 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
             throw new FileNotFoundException(path);
 
         if (newDocument) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-                intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         }
 
         intent.setData(Uri.parse("file://" + path));
@@ -1342,10 +1243,8 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
         intent.setData(Uri.parse("file://" + path));
 
         if (newDocument) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-                intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         }
 
 
@@ -1364,15 +1263,11 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
             super.finish();
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = getIntent();
-            if (intent != null && (intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_DOCUMENT) != 0)
-                finishAndRemoveTask();
-            else
-                super.finish();
-        } else {
+        Intent intent = getIntent();
+        if (intent != null && (intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_DOCUMENT) != 0)
+            finishAndRemoveTask();
+        else
             super.finish();
-        }
     }
 
     public LuaAsyncTask newTask(LuaObject func) throws LuaError {
@@ -1392,8 +1287,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
     }
 
     public LuaThread newThread(LuaObject func, Object[] arg) throws LuaError {
-        LuaThread thread = new LuaThread(this, func, true, arg);
-        return thread;
+        return new LuaThread(this, func, true, arg);
     }
 
     public LuaTimer newTimer(LuaObject func) throws LuaError {
@@ -1468,15 +1362,12 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
 
     public Ticker ticker(final LuaObject func, long period) throws LuaError {
         Ticker timer = new Ticker();
-        timer.setOnTickListener(new Ticker.OnTickListener() {
-            @Override
-            public void onTick() {
-                try {
-                    func.call();
-                } catch (LuaError e) {
-                    e.printStackTrace();
-                    sendError("onTick", e);
-                }
+        timer.setOnTickListener(() -> {
+            try {
+                func.call();
+            } catch (LuaError e) {
+                e.printStackTrace();
+                sendError("onTick", e);
             }
         });
         timer.start();
@@ -1506,13 +1397,13 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
     public void setContentView(LuaObject layout, LuaObject env) throws LuaError {
         // TODO: Implement this method
         LuaObject loadlayout = L.getLuaObject("loadlayout");
-        View view = null;
+        View view;
         if (layout.isString())
             view = (View) loadlayout.call(layout.getString(), env);
         else if (layout.isTable())
             view = (View) loadlayout.call(layout, env);
         else
-            throw new LuaError("layout may be table or string.");
+            throw new LuaError("布局可以是表或字符串.");
         super.setContentView(view);
     }
 
@@ -1583,7 +1474,6 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
                 return 0;
             }
 
-            ;
         };
         call.register("call");
 
@@ -1637,16 +1527,11 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
     @Override
     public void setTitle(CharSequence title) {
         super.setTitle(title);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ActivityManager.TaskDescription tDesc = null;
-            try {
-                tDesc = new ActivityManager.TaskDescription(title.toString(), loadBitmap(getLuaPath("icon.png")));
-            } catch (IOException e) {
-                e.printStackTrace();
-                tDesc = new ActivityManager.TaskDescription(title.toString());
-            }
-            setTaskDescription(tDesc);
-        }
+        ActivityManager.TaskDescription tDesc;
+
+        tDesc = new ActivityManager.TaskDescription(title.toString());
+
+        setTaskDescription(tDesc);
     }
 
 
@@ -1670,8 +1555,8 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
                 L.remove(-2);
                 L.insert(-2);
                 int l = args.length;
-                for (int i = 0; i < l; i++) {
-                    L.pushObjectValue(args[i]);
+                for (Object arg : args) {
+                    L.pushObjectValue(arg);
                 }
                 ok = L.pcall(l, 1, -2 - l);
                 if (ok == 0) {
@@ -1688,6 +1573,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
             sendMsg(e.getMessage());
             String s = e.getMessage();
             String p = "android.permission.";
+            assert s != null;
             int i = s.indexOf(p);
             if (i > 0) {
                 i = i + p.length();
@@ -1706,13 +1592,7 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
                 }
             }
             if (isUpdata) {
-                /*LuaUtil.rmDir(new File(extDir));
-                 LuaUtil.rmDir(new File(luaMdDir));
-				 SharedPreferences info=getSharedPreferences("appInfo", 0);
-				 SharedPreferences.Editor edit=info.edit();
-				 edit.putLong("lastUpdateTime", 0);
-				 edit.commit();*/
-                //sendMsg("初始化错误，请清除数据后重新启动程序。。。");
+                sendMsg("初始化错误，请清除数据后重新启动程序。。。");
             }
 
         }
@@ -1733,8 +1613,8 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
                 L.remove(-2);
                 L.insert(-2);
                 int l = args.length;
-                for (int i = 0; i < l; i++) {
-                    L.pushObjectValue(args[i]);
+                for (Object arg : args) {
+                    L.pushObjectValue(arg);
                 }
                 ok = L.pcall(l, 0, -2 - l);
                 if (ok == 0) {
@@ -1767,8 +1647,8 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
                         L.insert(-2);
 
                         int l = args.length;
-                        for (int i = 0; i < l; i++) {
-                            L.pushObjectValue(args[i]);
+                        for (Object arg : args) {
+                            L.pushObjectValue(arg);
                         }
 
                         int ok = L.pcall(l, 1, -2 - l);
@@ -1798,8 +1678,8 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
                 L.insert(-2);
 
                 int l = args.length;
-                for (int i = 0; i < l; i++) {
-                    L.pushObjectValue(args[i]);
+                for (Object arg : args) {
+                    L.pushObjectValue(arg);
                 }
 
                 ok = L.pcall(l, 1, -2 - l);
@@ -1814,25 +1694,18 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
         return null;
     }
 
-//读取asset文件
 
     //生成错误信息
     private String errorReason(int error) {
-        switch (error) {
-            case 6:
-                return "错误";
-            case 5:
-                return "垃圾回收错误";
-            case 4:
-                return "内存溢出";
-            case 3:
-                return "语法错误";
-            case 2:
-                return "运行错误";
-            case 1:
-                return "Yield 错误";
-        }
-        return "未知错误 " + error;
+        return switch (error) {
+            case 6 -> "错误";
+            case 5 -> "垃圾回收错误";
+            case 4 -> "内存溢出";
+            case 3 -> "语法错误";
+            case 2 -> "运行错误";
+            case 1 -> "Yield 错误";
+            default -> "未知错误 " + error;
+        };
     }
 
     public byte[] readAsset(String name) throws IOException {
@@ -1878,8 +1751,8 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
         // 调用 runFunc 方法执行 onError 函数
         Object ret = runFunc("onError", title, msg);
         // 如果返回值为 true，则直接返回
-        if (ret != null && ret.getClass() == Boolean.class && (Boolean) ret)
-            return;
+        if (ret != null && ret.getClass() == Boolean.class && (Boolean) ret) {
+        }
         else
             // 否则，调用 sendMsg 方法发送错误消息
             sendMsg(title + ": " + msg.getMessage());
@@ -1976,13 +1849,14 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
     }
 
     // 内部类 MainHandler 继承自 Handler
+    @SuppressLint("HandlerLeak")
     public class MainHandler extends Handler {
 
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 0: {
+                case 0 -> {
                     // 处理 what 为 0 的情况
                     String data = msg.getData().getString(DATA);
                     if (mDebug)
@@ -1992,22 +1866,19 @@ public class LuaActivity extends AppCompatActivity implements LuaBroadcastReceiv
                     status.append(data + "\n");
                     adapter.add(data);
                 }
-                break;
-                case 1: {
+                case 1 -> {
                     // 处理 what 为 1 的情况
                     Bundle data = msg.getData();
                     // 获取字符串参数和 args 数组，并设置全局变量
-                    setField(data.getString(DATA), ((Object[]) data.getSerializable("args"))[0]);
+                    setField(data.getString(DATA), ((Object[]) Objects.requireNonNull(data.getSerializable("args")))[0]);
                 }
-                break;
-                case 2: {
+                case 2 -> {
                     // 处理 what 为 2 的情况
                     String src = msg.getData().getString(DATA);
                     // 执行 runFunc 方法
                     runFunc(src);
                 }
-                break;
-                case 3: {
+                case 3 -> {
                     // 处理 what 为 3 的情况
                     String src = msg.getData().getString(DATA);
                     // 获取字符串参数和序列化的 args 数组，并执行 runFunc 方法

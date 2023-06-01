@@ -39,7 +39,6 @@ public class comZipUtil
 		compress(zipOutputStream, bufferedOutputStream, new File(str), null);
 		bufferedOutputStream.close();
 		zipOutputStream.close();
-		return;
 	}
 
 	public static void ZipUncompress(String str, String str2) throws Exception {
@@ -92,11 +91,11 @@ public class comZipUtil
 				zipOutputStream.putNextEntry(new ZipEntry(str + "/"));
 				return;
 			}
-			for (int i = 0; i < listFiles.length; i++) {
-				if(str!=null) {
-					compress(zipOutputStream, bufferedOutputStream, listFiles[i], str + "/" +listFiles[i].getName());
-				}else{
-					compress(zipOutputStream, bufferedOutputStream, listFiles[i], listFiles[i].getName());
+			for (File listFile : listFiles) {
+				if (str != null) {
+					compress(zipOutputStream, bufferedOutputStream, listFile, str + "/" + listFile.getName());
+				} else {
+					compress(zipOutputStream, bufferedOutputStream, listFile, listFile.getName());
 				}
 			}
 			return;

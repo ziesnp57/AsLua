@@ -1,12 +1,14 @@
 package com.luajava;
 
+import androidx.annotation.NonNull;
+
 /**
  * Created by nirenr on 2018/12/17.
  */
 
 public class LuaString implements CharSequence {
 
-    private  byte[] mByte=new byte[0];
+    private final byte[] mByte;
 
     public LuaString(String string) {
         mByte=string.getBytes();
@@ -30,11 +32,13 @@ public class LuaString implements CharSequence {
         return (char) mByte[index];
     }
 
+    @NonNull
     @Override
     public CharSequence subSequence(int start, int end) {
         return new String(mByte,start,end);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return new String(mByte);

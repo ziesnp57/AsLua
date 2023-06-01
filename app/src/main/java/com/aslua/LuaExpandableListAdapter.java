@@ -35,19 +35,19 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 	private Resources mRes;
 	private LuaState L;
 	private LuaContext mContext;
-	
+
 	private LuaTable<Integer,LuaTable<String,Object>> mGroupData;
 	private LuaTable<Integer,LuaTable<Integer,LuaTable<String,Object>>> mChildData;
 
 	private HashMap<View,Animation> mAnimCache = new HashMap<View,Animation>();
-	
+
 	private LuaTable mGroupLayout;
 	private LuaTable mChildLayout;
-	
+
 	private LuaFunction<View> loadlayout;
 
 	private LuaFunction<?> insert;
-	
+
 	private LuaFunction<?> remove;
 
 	private boolean updateing;
@@ -67,14 +67,14 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 	public LuaExpandableListAdapter(LuaContext context,  LuaTable groupLayout, LuaTable childLayout) throws LuaError {
 		this(context,null,null,groupLayout,childLayout);
 	}
-	
-	
+
+
 	public LuaExpandableListAdapter(LuaContext context, LuaTable<Integer,LuaTable<String,Object>> groupData, LuaTable<Integer,LuaTable<Integer,LuaTable<String,Object>>> childData, LuaTable groupLayout, LuaTable childLayout) throws LuaError {
 		mContext = context;
 		L = context.getLuaState();
 		mRes=mContext.getContext().getResources();
 
-		mDraw=new BitmapDrawable(mRes, getClass().getResourceAsStream("/res/drawable/icon.png"));
+		mDraw=new BitmapDrawable(mRes, getClass().getResourceAsStream("@mipmap/ic_launcher"));
 		mDraw.setColorFilter(0x88ffffff, PorterDuff.Mode.SRC_ATOP);
 
 		mGroupLayout = groupLayout;
@@ -138,7 +138,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 		// TODO: Implement this method
 		return childPosition + 1;
 	}
-	
+
 	@Override
 	public boolean hasStableIds() {
 		// TODO: Implement this method
@@ -149,7 +149,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 		// TODO: Implement this method
 		return new GroupItem(mChildData.get(groupPosition + 1));
 	}
-	
+
 	public LuaTable<Integer,LuaTable<String,Object>> getGroupData(){
 		return mGroupData;
 	}
@@ -157,7 +157,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 	public LuaTable<Integer,LuaTable<Integer,LuaTable<String,Object>>> getChildData(){
 		return mChildData;
 	}
-	
+
 	public GroupItem add(LuaTable<String,Object> groupItem) throws Exception {
 		mGroupData.put(mGroupData.length() + 1, groupItem);
 		LuaTable<Integer, LuaTable<String, Object>> childItem=new LuaTable<Integer,LuaTable<String,Object>>(L);
@@ -184,7 +184,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 		remove.call(mGroupData, idx + 1);
 		if (mNotifyOnChange) notifyDataSetChanged();
 	}
-	
+
 	public void clear() {
 		mGroupData.clear();
 		mChildData.clear();
@@ -206,12 +206,10 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 				holder = new LuaTable<String,View>(L);
 				view = loadlayout.call(mGroupLayout, holder, AbsListView.class);
 				view.setTag(holder);
-			}
-			catch (LuaError e) {
+			} catch (LuaError e) {
 				return new View(mContext.getContext());
 			}
-		}
-		else {
+		} else {
 			view = convertView;
 			holder = (LuaTable<String, View>) view.getTag();
 		}
@@ -249,8 +247,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 				try {
 					anim = mAnimationUtil.call();
 					mAnimCache.put(convertView, anim);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					Log.i("lua", e.getMessage());
 				}
 			}
@@ -273,12 +270,10 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 				holder = new LuaTable<String,View>(L);
 				view = loadlayout.call(mChildLayout, holder, AbsListView.class);
 				view.setTag(holder);
-			}
-			catch (LuaError e) {
+			} catch (LuaError e) {
 				return new View(mContext.getContext());
 			}
-		}
-		else {
+		} else {
 			view = convertView;
 			holder = (LuaTable<String, View>) view.getTag();
 		}
@@ -299,8 +294,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 				if (obj != null) {
 					setHelper(obj, value);
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				Log.i("lua", e.getMessage());
 			}
 		}
@@ -315,8 +309,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 				try {
 					anim = mAnimationUtil.call();
 					mAnimCache.put(convertView, anim);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					Log.i("lua", e.getMessage());
 				}
 			}
@@ -344,8 +337,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 					setHelper(view, value2);
 				else
 					javaSetter(view, key2, value2);
-			}
-			catch (Exception e2) {
+			} catch (Exception e2) {
 				Log.i("lua", e2.getMessage());
 			}
 		}
@@ -354,14 +346,12 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 	private void setHelper(View view, Object value) {
 		if (value instanceof LuaTable) {
 			setFields(view, (LuaTable<String, Object>)value);
-		}
-		else if (view instanceof TextView) {
+		} else if (view instanceof TextView) {
 			if (value instanceof CharSequence)
 				((TextView)view).setText((CharSequence)value);
 			else
 				((TextView)view).setText(value.toString());
-		}
-		else if (view instanceof ImageView) {
+		} else if (view instanceof ImageView) {
 			try {
 				if (value instanceof Bitmap)
 					((ImageView)view).setImageBitmap((Bitmap)value);
@@ -371,8 +361,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 					((ImageView)view).setImageDrawable((Drawable)value);
 				else if (value instanceof Number)
 					((ImageView)view).setImageResource(((Number)value).intValue());
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				Log.i("lua", e.getMessage());
 			}
 
@@ -401,8 +390,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 					Object listener = L.getLuaObject(-1).createProxy(tp[0]);
 					m.invoke(obj, listener);
 					return 1;
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					throw new LuaError(e);
 				}
 			}
@@ -429,19 +417,15 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 				try {
 					if (value instanceof Double || value instanceof Float) {
 						m.invoke(obj, LuaState.convertLuaNumber(((Number)value).doubleValue(), tp[0]));
-					}
-					else if (value instanceof Long || value instanceof Integer) {
+					} else if (value instanceof Long || value instanceof Integer) {
 						m.invoke(obj, LuaState.convertLuaNumber(((Number)value).longValue(), tp[0]));
-					}
-					else if (value instanceof Boolean ){
+					} else if (value instanceof Boolean ){
 						m.invoke(obj, (Boolean)value);
-					}
-					else{
+					} else{
 						continue;
 					}
 					return 1;
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					buf.append(e.getMessage());
 					buf.append("\n");
 					continue;
@@ -455,8 +439,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 			try {
 				m.invoke(obj, value);
 				return 1;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				buf.append(e.getMessage());
 				buf.append("\n");
 				continue;
@@ -471,6 +454,7 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private class GroupItem {
 		private LuaTable<Integer,LuaTable<String,Object>> mData;
+
 		public GroupItem(LuaTable<Integer,LuaTable<String,Object>> item){
 			mData=item;
 		}
@@ -529,13 +513,12 @@ public class LuaExpandableListAdapter extends BaseExpandableListAdapter {
 			try {
 				LuaBitmap.getBitmap(mContext, mPath);
 				mHandler.sendEmptyMessage(0);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				mContext.sendError("AsyncLoader",e);
 			}
 
 		}
 
 	}
-	
+
 }

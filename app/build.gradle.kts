@@ -15,20 +15,18 @@ android {
         targetSdk = 33
         versionCode = 52422
         versionName = "1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = false
         ndk {
             abiFilters.apply {
-                add("armeabi-v7a") // 32位
                 add("arm64-v8a") // 64位
-                add("x86_64") // 64位
-                add("x86") // 32位
+                //add("x86_64") // 64位
             }
         }
     }
 
     buildTypes {
         release {
+            isMinifyEnabled = true
             isMinifyEnabled = false
             isDebuggable = false
             proguardFiles(
@@ -47,6 +45,8 @@ android {
             path("src/main/jni/Android.mk")
         }
     }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -58,7 +58,6 @@ android {
         viewBinding = true
     }
     ndkVersion = "25.2.9519653"
-
 }
 
 
@@ -79,20 +78,17 @@ dependencies {
     implementation(libs.bom)
     implementation(libs.editor)
     implementation(libs.language.textmate)
-    implementation(libs.editor.lsp)
     implementation(libs.androidx.gridlayout)
     implementation(libs.glide)
     implementation(libs.okhttp)
     implementation(libs.legacy.support.v4)
     implementation(libs.mmkv)
-    implementation(libs.org.eclipse.lsp4j)
     implementation(libs.preference)
     implementation(libs.annotation)
     implementation(libs.jsoupxpath)
     implementation(libs.commons.compress)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    implementation(libs.commons.io)
+    implementation(libs.tinypinyin)
     ksp(libs.androidx.room.compiler)
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))

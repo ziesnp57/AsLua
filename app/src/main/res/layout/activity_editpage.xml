@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.reflow.Editpage">
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabsd"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:animateLayoutChanges="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tabGravity="start"
+        app:tabIndicatorHeight="0dp"
+        app:tabMode="scrollable" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="28dp"
+        android:animateLayoutChanges="false"
+        app:layout_constraintTop_toBottomOf="@+id/tabsd"
+        app:tabGravity="start"
+        app:tabIndicatorFullWidth="false"
+        app:tabInlineLabel="false"
+        app:tabMode="scrollable"
+        app:tabTextAppearance="@style/TabLayoutTextStyle" />
+
+
+    <io.github.rosemoe.sora.widget.CodeEditor
+        android:id="@+id/codeEditor"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
+        app:layout_constraintTop_toBottomOf="@+id/tabs"
+        app:lnPanelPosition="center"
+        app:lnPanelPositionMode="follow" />
+
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3">
+
+        <io.github.rosemoe.sora.widget.SymbolInputView
+            android:id="@+id/symbolInputView"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp" />
+
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:text="46:44"
+            android:id="@+id/position_display"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="12sp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/drawer"
+        android:layout_gravity="start"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="match_parent">
+
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

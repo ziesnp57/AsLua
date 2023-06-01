@@ -2,23 +2,18 @@ package com.aslua.util;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
-import android.annotation.TargetApi;
 import android.graphics.Path;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.ViewConfiguration;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 public class GlobalActionAutomator {
 
     private AccessibilityService mService;
     private ScreenMetrics mScreenMetrics;
     private Handler mHandler;
 
-    @TargetApi(Build.VERSION_CODES.N)
     public GlobalActionAutomator(AccessibilityService service,Handler handler) {
         mService = service;
         mHandler = handler;
@@ -44,7 +39,6 @@ public class GlobalActionAutomator {
         return performGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private boolean performGlobalAction(int globalAction) {
         if (mService == null)
             return false;

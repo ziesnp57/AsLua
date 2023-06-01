@@ -25,14 +25,14 @@
     <string name="tab_texto_1">默认</string>
     <string name="tab_texto_2">最新</string>
     <string name="tab_texto_3">发布"</string>
-    <string name="tab_texto_4">回复</string>
-    <string name="tab_texto_5">热度</string>
+    <string name="tab_texto_4">热度</string>
 
 
     <string name="login_mane">游客</string>
     <string name="login_gengduo">点击登录</string>
     <string name="teizi">我的帖子</string>
     <string name="yuama">我的源码</string>
+    <string name="doc">远程文档</string>
     <string name="liulanjilu">浏览记录</string>
     <string name="shoucang">我的收藏</string>
     <string name="sheshi">软件设置</string>
@@ -87,7 +87,6 @@
     <string name="tab_text_3">已下架</string>
     <string name="tab_text_4">帖子</string>
     <string name="tab_text_5">源码</string>
-    <string name="title_activity_eimu">eimu</string>
     <string name="copyright">CopyRight © 2023 歪果桃 版权所有</string>
     <string name="yonghuxieyi">用户协议</string>
     <string name="xiegan">"  |  "</string>
@@ -96,26 +95,21 @@
     <string name="jianchagengxin">检查更新</string>
     <string name="guanyuzuozhe">关于作者</string>
     <string name="fankuiwenti">反馈问题</string>
-    <string name="title_activity_main">MainActivity</string>
+
+    <string name="jctext1">清空</string>
+    <string name="jctext2">粘贴</string>
+    <string name="jctext3">对齐</string>
+    <string name="jctext4">确定</string>
+    <string name="title_activity_editpage">Editpage</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="jctext1">清空</string>
-    <string name="jctext2">粘贴</string>
-    <string name="jctext3">对齐</string>
-    <string name="jctext4">确定</string>
+    <string name="qingkou">清空</string>
+    <string name="add">添加</string>
+    <string name="docadd">保存</string>
 
 
 </resources>

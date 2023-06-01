@@ -24,8 +24,6 @@
 
 package com.luajava;
 
-import com.aslua.LuaApplication;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +41,7 @@ public final class LuaStateFactory
 	/**
 	 * Array with all luaState's instances
 	 */
-	private static final Map<Long,LuaState> states = new HashMap<Long,LuaState>();
+	private static final Map<Long,LuaState> states = new HashMap<>();
 
 	/**
 	 * Non-public constructor. 
@@ -66,7 +64,6 @@ public final class LuaStateFactory
 	
 	/**
 	 * Returns a existing instance of LuaState
-	 * @param index
 	 * @return LuaState
 	 */
 	public synchronized static LuaState getExistingState(long index)
@@ -83,7 +80,6 @@ public final class LuaStateFactory
 	/**
 	 * Receives a existing LuaState and checks if it exists in the states list.
 	 * If it doesn't exist adds it to the list.
-	 * @param L
 	 * @return int
 	 */
 	public synchronized static long insertLuaState(LuaState L)
@@ -95,11 +91,11 @@ public final class LuaStateFactory
 	
 	/**
 	 * removes the luaState from the states list
-	 * @param idx
 	 */
 	public synchronized static void removeLuaState(long idx)
 	{
 		states.put(idx, null);
 	}
+
 
 }

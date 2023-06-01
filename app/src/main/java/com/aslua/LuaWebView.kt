@@ -43,8 +43,8 @@ import java.io.File
 import java.util.Arrays
 
 
-@SuppressLint("ViewConstructor")
-class LuaWebViewr(context: LuaActivity) : WebView(context), LuaGcable {
+@SuppressLint("ViewConstructor", "SetJavaScriptEnabled")
+class LuaWebView(context: LuaActivity) : WebView(context), LuaGcable {
     private var mDownloadBroadcastReceiver: DownloadBroadcastReceiver? = null
     private val mDownload = HashMap<Long, Array<String?>>()
     private var mOnDownloadCompleteListener: OnDownloadCompleteListener? = null
@@ -545,9 +545,9 @@ class LuaWebViewr(context: LuaActivity) : WebView(context), LuaGcable {
 
         fun onReceivedClientCertRequest(
             view: WebView?,
-            handler: ClientCertRequest?, host_and_port: String?
+            handler: ClientCertRequest?, hostandport: String?
         ) {
-            mLuaWebViewClient.onReceivedClientCertRequest(view, handler, host_and_port)
+            mLuaWebViewClient.onReceivedClientCertRequest(view, handler, hostandport)
         }
 
         override fun onReceivedHttpAuthRequest(
@@ -762,7 +762,7 @@ class LuaWebViewr(context: LuaActivity) : WebView(context), LuaGcable {
                 error: SslError
             ) {
                 val b = AlertDialog.Builder(mContext)
-                b.setTitle("SslError")
+                b.setTitle("SSL错误")
                 b.setMessage(error.toString())
                 b.setPositiveButton(
                     android.R.string.ok

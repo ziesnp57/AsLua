@@ -2,7 +2,6 @@ package com.nirenr.screencapture;
 
 import static android.content.Context.MEDIA_PROJECTION_SERVICE;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -27,7 +25,6 @@ import com.aslua.LuaAccessibilityService;
 import java.nio.ByteBuffer;
 
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class ScreenShot {
 
 
@@ -57,12 +54,7 @@ public class ScreenShot {
 
         ScreenShot.mResultData = mResultData;
         if (sService != null) {
-            sService.getHandler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getScreenCaptureBitmap(sService, sScreenCaptureListener);
-                }
-            }, 500);
+            sService.getHandler().postDelayed(() -> getScreenCaptureBitmap(sService, sScreenCaptureListener), 500);
         }
     }
 

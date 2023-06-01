@@ -27,6 +27,8 @@ package com.luajava;
 
 import android.util.Log;
 
+import com.aslua.LuaContext;
+
 /**
  * LuaState if the main class of LuaJava for the Java developer.
  * LuaState is a mapping of most of Lua's C API functions.
@@ -172,7 +174,7 @@ public class LuaState {
         setTable(LUA_REGISTRYINDEX);
     }
 
-    public com.aslua.LuaContext getContext() {
+    public LuaContext getContext() {
         return mContext;
     }
 
@@ -1184,7 +1186,7 @@ public class LuaState {
             } else if (retType == Float.TYPE) {
                 return db.floatValue();
             } else if (retType == Double.TYPE) {
-                return db.doubleValue();
+                return db;
             } else if (retType == Byte.TYPE) {
                 return db.byteValue();
             } else if (retType == Short.TYPE) {
@@ -1193,17 +1195,17 @@ public class LuaState {
         } else if (Number.class.isAssignableFrom(retType)) {
             // Checks all possibilities of number types
             if (retType.isAssignableFrom(Long.class)) {
-                return new Long(db.longValue());
+                return db.longValue();
             } else if (retType.isAssignableFrom(Integer.class)) {
-                return new Integer(db.intValue());
+                return db.intValue();
             } else if (retType.isAssignableFrom(Float.class)) {
-                return new Float(db.floatValue());
+                return db.floatValue();
             } else if (retType.isAssignableFrom(Double.class)) {
                 return db;
             } else if (retType.isAssignableFrom(Byte.class)) {
-                return new Byte(db.byteValue());
+                return db.byteValue();
             } else if (retType.isAssignableFrom(Short.class)) {
-                return new Short(db.shortValue());
+                return db.shortValue();
             }
         }
 
@@ -1217,7 +1219,7 @@ public class LuaState {
             if (retType == Integer.TYPE) {
                 return lg.intValue();
             } else if (retType == Long.TYPE) {
-                return lg.longValue();
+                return lg;
             } else if (retType == Float.TYPE) {
                 return lg.floatValue();
             } else if (retType == Double.TYPE) {
@@ -1230,17 +1232,17 @@ public class LuaState {
         } else if (Number.class.isAssignableFrom(retType)) {
             // Checks all possibilities of number types
             if (retType.isAssignableFrom(Long.class)) {
-                return new Long(lg.longValue());
+                return lg;
             } else if (retType.isAssignableFrom(Integer.class)) {
-                return new Integer(lg.intValue());
+                return lg.intValue();
             } else if (retType.isAssignableFrom(Float.class)) {
-                return new Float(lg.floatValue());
+                return lg.floatValue();
             } else if (retType.isAssignableFrom(Double.class)) {
                 return lg;
             } else if (retType.isAssignableFrom(Byte.class)) {
-                return new Byte(lg.byteValue());
+                return lg.byteValue();
             } else if (retType.isAssignableFrom(Short.class)) {
-                return new Short(lg.shortValue());
+                return lg.shortValue();
             }
         } else if(retType instanceof Object){
             return lg;

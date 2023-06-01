@@ -1,6 +1,6 @@
 package com.luajava;
 
-public class LuaFunction <T extends Object>extends LuaObject implements LuaMetaTable {
+public class LuaFunction <T>extends LuaObject implements LuaMetaTable {
 
 	@Override
 	public T __call(Object[] arg) throws LuaError {

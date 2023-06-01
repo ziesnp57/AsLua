@@ -5,8 +5,8 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 LOCAL_MODULE := lua
 CAL_ARM_MODE := arm
-TARGET_PLATFORM := arm64-v8a
-TARGET_ABI := android-30-arm64
+TARGET_PLATFORM := all
+TARGET_ABI := android-33-arm64
 LOCAL_CFLAGS += -std=c17
 
 

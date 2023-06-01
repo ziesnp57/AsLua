@@ -6,10 +6,11 @@ import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayListAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+
+import com.android.widget.ArrayListAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,8 +130,8 @@ public class LuaDialog extends AlertDialog implements  DialogInterface.OnClickLi
     }
 
     public void setItems(String[] items) {
-        ArrayList<String> alist = new ArrayList<String>(Arrays.asList(items));
-        ArrayListAdapter adp = new ArrayListAdapter<String>(mContext, android.R.layout.simple_list_item_1, alist);
+        ArrayList<String> alist = new ArrayList<>(Arrays.asList(items));
+        ArrayListAdapter adp = new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_1, alist);
         setAdapter(adp);
         mListView.setChoiceMode(ListView.CHOICE_MODE_NONE);
     }
@@ -146,8 +147,8 @@ public class LuaDialog extends AlertDialog implements  DialogInterface.OnClickLi
     }
 
     public void setSingleChoiceItems(CharSequence[] items, int checkedItem){
-        ArrayList<CharSequence> alist = new ArrayList<CharSequence>(Arrays.asList(items));
-        ArrayListAdapter adp = new ArrayListAdapter<CharSequence>(mContext, android.R.layout.simple_list_item_single_choice, alist);
+        ArrayList<CharSequence> alist = new ArrayList<>(Arrays.asList(items));
+        ArrayListAdapter adp = new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_single_choice, alist);
         setAdapter(adp);
         mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         mListView.setItemChecked(checkedItem,true);
@@ -158,8 +159,8 @@ public class LuaDialog extends AlertDialog implements  DialogInterface.OnClickLi
     }
 
     public void setMultiChoiceItems(CharSequence[] items, int[] checkedItems){
-        ArrayList<CharSequence> alist = new ArrayList<CharSequence>(Arrays.asList(items));
-        ArrayListAdapter adp = new ArrayListAdapter<CharSequence>(mContext, android.R.layout.simple_list_item_multiple_choice, alist);
+        ArrayList<CharSequence> alist = new ArrayList<>(Arrays.asList(items));
+        ArrayListAdapter adp = new ArrayListAdapter<>(mContext, android.R.layout.simple_list_item_multiple_choice, alist);
         setAdapter(adp);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         for (int i:checkedItems)
@@ -217,7 +218,7 @@ public class LuaDialog extends AlertDialog implements  DialogInterface.OnClickLi
     }
 
     public interface OnClickListener{
-        public void onClick(LuaDialog dlg,Button btn);
+        void onClick(LuaDialog dlg,Button btn);
     }
 
 }

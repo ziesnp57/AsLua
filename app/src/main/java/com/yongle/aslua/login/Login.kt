@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.tencent.connect.common.Constants
@@ -16,7 +17,7 @@ import com.yongle.aslua.databinding.ActivityLoginBinding
 class Login : AppCompatActivity() {
 
     // 声明变量
-    private lateinit var binding: ActivityLoginBinding
+    private var binding: ActivityLoginBinding? = null
 
     private lateinit var iu: BaseUiListener
 
@@ -36,22 +37,21 @@ class Login : AppCompatActivity() {
         iu = BaseUiListener(mTencent)
 
         // 设置布局
-        setContentView(binding.root)
+        setContentView(binding?.root)
 
         // 导航栏透明
         window.navigationBarColor = Color.TRANSPARENT
 
 
-
         // QQ登录
-        binding.qqlogin.setOnClickListener {
+        binding!!.qqlogin.setOnClickListener {
             Tencent.resetQQAppInfoCache()
             Tencent.resetTimAppInfoCache()
             Tencent.resetTargetAppInfoCache()
 
             when (mTencent.login(this, "get_user_info", iu, true)) {
                 -1 -> {
-                    "异常".showToast()
+                    Toast.makeText(this, "异常", Toast.LENGTH_SHORT).show()
                     mTencent.logout(MainActivity.context)
                 }
             }
@@ -59,7 +59,7 @@ class Login : AppCompatActivity() {
         }
 
         // 微信登录
-        binding.wxlogin.setOnClickListener {
+        binding!!.wxlogin.setOnClickListener {
 
             Snackbar.make(it, "暂未开放", Snackbar.LENGTH_SHORT).show()
 
@@ -71,7 +71,7 @@ class Login : AppCompatActivity() {
         @Suppress("DEPRECATION")
         super.onActivityResult(requestCode, resultCode, data)
         //腾讯QQ回调
-        Tencent.onActivityResultData(requestCode, resultCode, data,iu)
+        Tencent.onActivityResultData(requestCode, resultCode, data, iu)
         if (requestCode == Constants.REQUEST_API) {
             if (resultCode == Constants.REQUEST_LOGIN) {
                 Tencent.handleResultData(data, iu)
@@ -79,13 +79,16 @@ class Login : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        finish()
+    }
 
     // 设置返回按钮的点击事件
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                @Suppress("DEPRECATION")
-                onBackPressed()
+                finish()
                 return true
             }
         }
